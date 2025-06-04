@@ -2,24 +2,34 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SaverlyLogo } from '@/components/icons';
-import { ListChecks, BarChartBig, Sparkles, LogIn, UserPlus } from 'lucide-react';
+import { ListChecks, BarChartBig, Sparkles, LogIn, UserPlus, BellRing, NotebookText } from 'lucide-react';
 import Image from 'next/image';
 
 const features = [
   {
     icon: <ListChecks className="h-10 w-10 text-primary mb-4" />,
     title: 'সহজ লেনদেন ট্র্যাকিং',
-    description: 'আপনার আয় এবং ব্যয় অনায়াসে রেকর্ড এবং শ্রেণীবদ্ধ করুন, আর্থিক স্বচ্ছতা নিশ্চিত করুন।',
+    description: 'আপনার আয় এবং ব্যয় অনায়াসে রেকর্ড এবং শ্রেণীবদ্ধ করুন, আর্থিক স্বচ্ছতা নিশ্চিত করুন। প্রতিটি লেনদেনের পুঙ্খানুপুঙ্খ হিসাব রাখুন।',
   },
   {
     icon: <BarChartBig className="h-10 w-10 text-primary mb-4" />,
     title: 'শক্তিশালী রিপোর্টিং',
-    description: 'আপনার আর্থিক অভ্যাসের গভীর অন্তর্দৃষ্টি পান, তথ্যভিত্তিক সিদ্ধান্ত নিতে সহায়তা করবে।',
+    description: 'আপনার আর্থিক অভ্যাসের গভীর অন্তর্দৃষ্টি পান। বিস্তারিত চার্ট ও প্রতিবেদনের মাধ্যমে আপনার খরচের ধরণ বুঝুন ও ভবিষ্যতের জন্য পরিকল্পনা করুন।',
   },
   {
     icon: <Sparkles className="h-10 w-10 text-primary mb-4" />,
     title: 'AI আর্থিক উপদেষ্টা',
-    description: 'ব্যক্তিগতকৃত আর্থিক পরামর্শ এবং সুপারিশ গ্রহণ করুন, আপনার অর্থ ব্যবস্থাপনাকে করবে আরও সহজ।',
+    description: 'ব্যক্তিগতকৃত আর্থিক পরামর্শ এবং সুপারিশ গ্রহণ করুন। AI চ্যাটবটের সাথে কথা বলে আপনার আর্থিক সিদ্ধান্ত গ্রহণে সহায়তা পান।',
+  },
+  {
+    icon: <BellRing className="h-10 w-10 text-primary mb-4" />,
+    title: 'বিল রিমাইন্ডার সেট করুন',
+    description: 'গুরুত্বপূর্ণ পেমেন্টের ডেডলাইন আর মিস করবেন না। সময়মত বিল পরিশোধের জন্য কাস্টমাইজড রিমাইন্ডার সেট করুন।',
+  },
+  {
+    icon: <NotebookText className="h-10 w-10 text-primary mb-4" />,
+    title: 'আর্থিক নোট সংরক্ষণ করুন',
+    description: 'আপনার আর্থিক পরিকল্পনা, বাজারের বিশ্লেষণ, সঞ্চয়ের লক্ষ্য এবং অন্যান্য গুরুত্বপূর্ণ তথ্য নিরাপদে নোট করে রাখুন।',
   },
 ];
 
@@ -57,8 +67,8 @@ export default function LandingPage() {
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-headline mb-6">
               সেভারলি: আপনার <span className="text-primary">আর্থিক স্বচ্ছলতার</span> চাবিকাঠি
             </h1>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              আপনার আয় ও ব্যয় ট্র্যাক করুন, বাজেট তৈরি করুন, এবং আর্থিক লক্ষ্যে পৌঁছান – সবই এক জায়গায়। সেভারলি আপনার অর্থ ব্যবস্থাপনাকে সহজ ও কার্যকর করে তোলে।
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
+              সেভারলি একটি অত্যাধুনিক ব্যক্তিগত অর্থ ব্যবস্থাপনার অ্যাপ। এর মাধ্যমে আপনি সহজেই আপনার আয়-ব্যয় ট্র্যাক করতে পারবেন, বিলের জন্য রিমাইন্ডার সেট করতে পারবেন, আর্থিক নোট সংরক্ষণ করতে পারবেন এবং AI চালিত উপদেষ্টার কাছ থেকে পরামর্শ নিতে পারবেন। আপনার আর্থিক জীবনকে গুছিয়ে তুলুন সেভারলির সাথে।
             </p>
             <div className="space-x-4">
               <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
@@ -93,14 +103,14 @@ export default function LandingPage() {
               <h2 className="text-3xl sm:text-4xl font-bold font-headline">কেন সেভারলি?</h2>
               <p className="text-lg text-muted-foreground mt-2">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ।</p>
             </div>
-            <div className="grid md:grid-cols-3 gap-8 sm:gap-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
               {features.map((feature) => (
-                <div key={feature.title} className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-shadow duration-300">
+                <div key={feature.title} className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-shadow duration-300 flex flex-col">
                   <div className="flex justify-center items-center">
                     {feature.icon}
                   </div>
                   <h3 className="text-xl font-semibold font-headline mt-2 mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground text-sm">{feature.description}</p>
+                  <p className="text-muted-foreground text-sm flex-grow">{feature.description}</p>
                 </div>
               ))}
             </div>
