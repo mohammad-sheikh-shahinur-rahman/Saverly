@@ -83,13 +83,13 @@ export default function LandingPage() {
               </Button>
             </div>
             <div className="mt-12 sm:mt-16 max-w-4xl mx-auto">
-               <Image 
-                src="https://placehold.co/1200x600.png" 
-                alt="সেভারলি অ্যাপ ড্যাশবোর্ডের স্ক্রিনশট" 
-                width={1200} 
+               <Image
+                src="https://placehold.co/1200x600.png"
+                alt="সেভারলি অ্যাপ ড্যাশবোর্ডের মকআপ"
+                width={1200}
                 height={600}
                 className="rounded-lg shadow-2xl object-cover"
-                data-ai-hint="finance app dashboard"
+                data-ai-hint="app mockup"
                 priority
               />
             </div>
@@ -106,17 +106,17 @@ export default function LandingPage() {
             <div className="mb-12 sm:mb-16 max-w-3xl mx-auto">
               <Image
                 src="https://placehold.co/800x500.png"
-                alt="আর্থিক পরিকল্পনার একটি উদাহরণ"
+                alt="সেভারলি অ্যাপের বিভিন্ন ফিচারের মকআপ"
                 width={800}
                 height={500}
                 className="rounded-lg shadow-xl object-cover"
-                data-ai-hint="financial planning chart"
+                data-ai-hint="ui design"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {features.map((feature) => (
-                <div 
-                  key={feature.title} 
+                <div
+                  key={feature.title}
                   className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-all duration-300 flex flex-col items-center border border-transparent hover:border-primary"
                 >
                   <div className="flex-shrink-0">
@@ -129,7 +129,7 @@ export default function LandingPage() {
             </div>
           </div>
         </section>
-        
+
         {/* Call to Action Section */}
         <section className="py-16 sm:py-24 bg-gradient-to-tr from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
@@ -150,11 +150,11 @@ export default function LandingPage() {
               <div className="lg:w-1/2">
                 <Image
                   src="https://placehold.co/700x450.png"
-                  alt="আর্থিক স্বাধীনতার পথে যাত্রা"
+                  alt="সেভারলি অ্যাপের স্ক্রিনশট"
                   width={700}
                   height={450}
                   className="rounded-lg shadow-2xl object-cover mx-auto"
-                  data-ai-hint="financial freedom success"
+                  data-ai-hint="mobile app screen"
                 />
               </div>
             </div>
