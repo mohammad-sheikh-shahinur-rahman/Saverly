@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLayout } from '@/components/AppLayout';
@@ -8,8 +9,17 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Palette, Globe, DollarSign, Bell, Fingerprint } from 'lucide-react';
+import { useState } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 export default function SettingsPage() {
+  const { toast } = useToast();
+  const [selectedCurrency, setSelectedCurrency] = useState('usd');
+  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [reminderNotifications, setReminderNotifications] = useState(true);
+  const [summaryNotifications, setSummaryNotifications] = useState(false);
+  const [pinLockEnabled, setPinLockEnabled] = useState(false);
+
   return (
     <AppLayout>
       <div className="space-y-6 max-w-3xl mx-auto">
@@ -42,7 +52,13 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
               <Label htmlFor="currency-selector" className="text-base">Currency</Label>
-              <Select defaultValue="usd">
+              <Select 
+                value={selectedCurrency} 
+                onValueChange={(value) => {
+                  setSelectedCurrency(value);
+                  toast({ title: "Currency Updated", description: `Currency set to ${value.toUpperCase()}. (Preference not saved yet)` });
+                }}
+              >
                 <SelectTrigger id="currency-selector" className="w-[180px]">
                   <SelectValue placeholder="Select currency" />
                 </SelectTrigger>
@@ -76,13 +92,19 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
              <div className="flex items-center justify-between">
               <Label htmlFor="language-selector" className="text-base">Language</Label>
-              <Select defaultValue="en">
+              <Select 
+                value={selectedLanguage}
+                onValueChange={(value) => {
+                  setSelectedLanguage(value);
+                  toast({ title: "Language Updated", description: `Language set to ${value === 'en' ? 'English' : 'Bangla'}. (UI translation and preference saving not yet implemented)` });
+                }}
+              >
                 <SelectTrigger id="language-selector" className="w-[180px]">
                   <SelectValue placeholder="Select language" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="bn" disabled>Bangla (Coming Soon)</SelectItem>
+                  <SelectItem value="bn">Bangla</SelectItem>
                   <SelectItem value="es" disabled>Español (Coming Soon)</SelectItem>
                 </SelectContent>
               </Select>
@@ -101,11 +123,25 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
                 <Label htmlFor="reminder-notifications" className="text-base">Reminder Notifications</Label>
-                <Switch id="reminder-notifications" defaultChecked />
+                <Switch 
+                  id="reminder-notifications" 
+                  checked={reminderNotifications}
+                  onCheckedChange={(checked) => {
+                    setReminderNotifications(checked);
+                    toast({ title: "Notification Settings Updated", description: `Reminder notifications ${checked ? 'enabled' : 'disabled'}. (Preference not saved yet)` });
+                  }}
+                />
             </div>
             <div className="flex items-center justify-between">
                 <Label htmlFor="summary-notifications" className="text-base">Weekly Summary</Label>
-                <Switch id="summary-notifications" />
+                <Switch 
+                  id="summary-notifications" 
+                  checked={summaryNotifications}
+                  onCheckedChange={(checked) => {
+                    setSummaryNotifications(checked);
+                    toast({ title: "Notification Settings Updated", description: `Weekly summary ${checked ? 'enabled' : 'disabled'}. (Preference not saved yet)` });
+                  }}
+                />
             </div>
           </CardContent>
         </Card>
@@ -121,9 +157,22 @@ export default function SettingsPage() {
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
                 <Label htmlFor="pin-lock" className="text-base">Enable PIN Lock</Label>
-                <Switch id="pin-lock" />
+                <Switch 
+                  id="pin-lock" 
+                  checked={pinLockEnabled}
+                  onCheckedChange={(checked) => {
+                    setPinLockEnabled(checked);
+                    toast({ title: "Security Settings Updated", description: `PIN Lock ${checked ? 'enabled' : 'disabled'}. (Functionality not saved yet)` });
+                  }}
+                />
             </div>
-            <Button variant="outline" disabled>Change PIN</Button>
+            <Button 
+              variant="outline" 
+              disabled={!pinLockEnabled}
+              onClick={() => toast({ title: "Change PIN", description: "PIN change functionality is not yet implemented."})}
+            >
+              Change PIN
+            </Button>
             <p className="text-sm text-muted-foreground">
                 Biometric authentication (Fingerprint/Face ID) is typically handled by your device/browser and not directly configurable here for web apps.
             </p>
