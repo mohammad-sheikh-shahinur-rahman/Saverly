@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SaverlyLogo } from '@/components/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Hash } from 'lucide-react'; 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import type { ConfirmationResult } from 'firebase/auth';
 
@@ -36,7 +36,7 @@ const otpSchema = z.object({
 
 type OtpFormValues = z.infer<typeof otpSchema>;
 
-export default function VerifyOtpPage() {
+function VerifyOtpForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const phoneNumber = searchParams.get('phoneNumber');
@@ -49,13 +49,12 @@ export default function VerifyOtpPage() {
     if (typeof window !== 'undefined' && window.confirmationResult) {
       setConfirmationResultState(window.confirmationResult);
     } else if (typeof window !== 'undefined' && !window.confirmationResult) {
-      // If confirmationResult is not on window, means user landed here directly or an error occurred.
       toast({
         title: "ত্রুটি",
         description: "OTP যাচাইকরণের জন্য প্রয়োজনীয় তথ্য পাওয়া যায়নি। অনুগ্রহ করে আবার ফোন নম্বর দিয়ে চেষ্টা করুন।",
         variant: "destructive",
       });
-      router.replace(`/auth/phone-signin?isSignUp=${isSignUp}`);
+      router.replace(`/auth/phone-signin?isSignUp=${isSignUp ? 'true' : 'false'}`);
     }
   }, [isSignUp, router, toast]);
 
@@ -72,14 +71,13 @@ export default function VerifyOtpPage() {
     if (!confirmationResultState) {
       toast({ title: "ত্রুটি", description: "OTP যাচাইকরণ সেশন খুঁজে পাওয়া যায়নি। অনুগ্রহ করে আবার চেষ্টা করুন।", variant: "destructive" });
       setIsLoading(false);
-      router.replace(`/auth/phone-signin?isSignUp=${isSignUp}`);
+      router.replace(`/auth/phone-signin?isSignUp=${isSignUp ? 'true' : 'false'}`);
       return;
     }
 
     try {
       await confirmationResultState.confirm(values.otp);
       toast({ title: "সফল", description: `সফলভাবে ${isSignUp ? 'সাইন আপ' : 'সাইন ইন'} করেছেন।` });
-      // Clear confirmationResult from window after successful verification
       if (typeof window !== 'undefined') {
         delete window.confirmationResult;
       }
@@ -100,11 +98,10 @@ export default function VerifyOtpPage() {
   }
 
   const handleResendOtp = () => {
-    // Clear potentially stale confirmationResult from window
     if (typeof window !== 'undefined') {
         delete window.confirmationResult;
     }
-    router.push(`/auth/phone-signin?isSignUp=${isSignUp}&phoneNumber=${encodeURIComponent(phoneNumber || '')}`);
+    router.push(`/auth/phone-signin?isSignUp=${isSignUp ? 'true' : 'false'}&phoneNumber=${encodeURIComponent(phoneNumber || '')}`);
   }
 
   return (
@@ -167,5 +164,13 @@ export default function VerifyOtpPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function VerifyOtpPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center"><p>লোড হচ্ছে...</p></div>}>
+      <VerifyOtpForm />
+    </Suspense>
   );
 }

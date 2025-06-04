@@ -19,7 +19,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SaverlyLogo } from '@/components/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Phone } from 'lucide-react';
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import { auth } from '@/lib/firebase';
 import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
 import { useToast } from "@/hooks/use-toast";
@@ -29,22 +29,23 @@ declare global {
   interface Window { 
     recaptchaVerifier?: RecaptchaVerifier;
     confirmationResult?: ConfirmationResult;
+    recaptchaWidgetId?: number;
   }
 }
 
 const phoneSchema = z.object({
   phoneNumber: z.string()
     .min(10, { message: "ফোন নম্বর কমপক্ষে ১০ সংখ্যার হতে হবে।" })
-    // Example regex allows + followed by digits, spaces, hyphens, parentheses
     .regex(/^\+?[0-9\s-()]*$/, { message: "অবৈধ ফোন নম্বর ফরম্যাট। একটি দেশের কোডসহ নম্বর দিন (যেমন +৮৮০...)।" }),
 });
 
 type PhoneFormValues = z.infer<typeof phoneSchema>;
 
-export default function PhoneSignInPage() {
+function PhoneSignInForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isSignUp = searchParams.get('isSignUp') === 'true';
+  const defaultPhoneNumber = searchParams.get('phoneNumber');
   const { toast } = useToast();
   const [isLoading, setIsLoading] = useState(false);
   const recaptchaContainerRef = useRef<HTMLDivElement>(null);
@@ -53,7 +54,7 @@ export default function PhoneSignInPage() {
   const form = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
     defaultValues: {
-      phoneNumber: "+৮৮০", // Default to Bangladesh country code
+      phoneNumber: defaultPhoneNumber || "+৮৮০", 
     },
   });
   
@@ -62,9 +63,6 @@ export default function PhoneSignInPage() {
       window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
         'size': 'invisible',
         'callback': (response: any) => {
-          // reCAPTCHA solved, allow signInWithPhoneNumber.
-          // This callback is usually for 'normal' size reCAPTCHA.
-          // For 'invisible', it's often handled directly by the signInWithPhoneNumber call.
           console.log("reCAPTCHA verified:", response);
         },
         'expired-callback': () => {
@@ -73,15 +71,11 @@ export default function PhoneSignInPage() {
         }
       });
       window.recaptchaVerifier.render().then((widgetId) => {
-        // @ts-ignore
         window.recaptchaWidgetId = widgetId;
       });
     }
-     // Cleanup function to clear verifier if component unmounts or auth changes
     return () => {
-        if (window.recaptchaVerifier) {
-            // window.recaptchaVerifier.clear(); // This can cause issues if called prematurely. Be cautious.
-        }
+        // Cleanup if needed, though RecaptchaVerifier might self-clean or cause issues if cleared too aggressively.
     };
   }, [toast]);
 
@@ -96,7 +90,7 @@ export default function PhoneSignInPage() {
 
     try {
       const confirmationResult = await signInWithPhoneNumber(auth, values.phoneNumber, window.recaptchaVerifier);
-      window.confirmationResult = confirmationResult; // Store for next step
+      window.confirmationResult = confirmationResult; 
       toast({ title: "OTP পাঠানো হয়েছে", description: `${values.phoneNumber}-এ একটি যাচাইকরণ কোড পাঠানো হয়েছে।` });
       router.push(`/auth/verify-otp?phoneNumber=${encodeURIComponent(values.phoneNumber)}&isSignUp=${isSignUp}`);
     } catch (error: any) {
@@ -106,11 +100,10 @@ export default function PhoneSignInPage() {
         errorMessage = "অবৈধ ফোন নম্বর। দেশের কোডসহ সঠিক ফরম্যাটে দিন।";
       } else if (error.code === 'auth/too-many-requests') {
         errorMessage = "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।";
-      } else if (error.code === 'auth/captcha-check-failed') {
-        errorMessage = "reCAPTCHA যাচাইকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।";
-         if (window.recaptchaVerifier && typeof window.recaptchaVerifier.render === 'function') {
-           // @ts-ignore
-           grecaptcha.reset(window.recaptchaWidgetId);
+      } else if (error.code === 'auth/captcha-check-failed' || error.code === 'auth/network-request-failed') {
+        errorMessage = "reCAPTCHA যাচাইকরণ বা নেটওয়ার্ক সমস্যা। পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।";
+         if (window.grecaptcha && window.recaptchaWidgetId !== undefined) {
+           window.grecaptcha.reset(window.recaptchaWidgetId);
         }
       }
       toast({ title: "ত্রুটি", description: errorMessage, variant: "destructive" });
@@ -149,7 +142,6 @@ export default function PhoneSignInPage() {
                   </FormItem>
                 )}
               />
-              {/* Invisible reCAPTCHA container */}
               <div ref={recaptchaContainerRef} id="recaptcha-container"></div>
 
               <Button type="submit" className="w-full" disabled={isLoading}>
@@ -168,5 +160,13 @@ export default function PhoneSignInPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+export default function PhoneSignInPage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center"><p>লোড হচ্ছে...</p></div>}>
+      <PhoneSignInForm />
+    </Suspense>
   );
 }
