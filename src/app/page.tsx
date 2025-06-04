@@ -37,7 +37,7 @@ export default function LandingPage() {
   return (
     <div className="flex flex-col min-h-screen bg-background text-foreground">
       {/* Header */}
-      <header className="py-6 px-4 sm:px-6 lg:px-8 shadow-sm">
+      <header className="py-6 px-4 sm:px-6 lg:px-8 shadow-sm sticky top-0 z-50 bg-background/80 backdrop-blur-md">
         <div className="container mx-auto flex justify-between items-center">
           <Link href="/" className="flex items-center gap-2">
             <SaverlyLogo className="h-8 w-8 text-primary" />
@@ -62,7 +62,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-grow">
-        <section className="py-16 sm:py-24 bg-gradient-to-b from-background to-slate-50 dark:from-slate-900 dark:to-slate-800">
+        <section className="py-16 sm:py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-headline mb-6">
               সেভারলি: আপনার <span className="text-primary">আর্থিক স্বচ্ছলতার</span> চাবিকাঠি
@@ -97,19 +97,19 @@ export default function LandingPage() {
         </section>
 
         {/* Features Section */}
-        <section id="features" className="py-16 sm:py-24">
+        <section id="features" className="py-16 sm:py-24 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold font-headline">কেন সেভারলি?</h2>
               <p className="text-lg text-muted-foreground mt-2">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ।</p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-12">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {features.map((feature) => (
-                <div key={feature.title} className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-shadow duration-300 flex flex-col">
-                  <div className="flex justify-center items-center">
+                <div key={feature.title} className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-shadow duration-300 flex flex-col items-center">
+                  <div className="flex-shrink-0">
                     {feature.icon}
                   </div>
-                  <h3 className="text-xl font-semibold font-headline mt-2 mb-2">{feature.title}</h3>
+                  <h3 className="text-xl font-semibold font-headline mt-4 mb-2">{feature.title}</h3>
                   <p className="text-muted-foreground text-sm flex-grow">{feature.description}</p>
                 </div>
               ))}
@@ -118,7 +118,7 @@ export default function LandingPage() {
         </section>
         
         {/* Call to Action Section */}
-        <section className="py-16 sm:py-24 bg-primary/5 dark:bg-primary/10">
+        <section className="py-16 sm:py-24 bg-gradient-to-tr from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl sm:text-4xl font-bold font-headline mb-6">
               আপনার আর্থিক নিয়ন্ত্রণ নিতে প্রস্তুত?
@@ -136,7 +136,7 @@ export default function LandingPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 bg-slate-100 dark:bg-slate-800 border-t border-border">
+      <footer className="py-8 bg-muted/50 border-t border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} সেভারলি। সর্বস্বত্ব সংরক্ষিত।</p>
            <p className="text-xs mt-1">একটি ডেমো অ্যাপ্লিকেশন</p>
