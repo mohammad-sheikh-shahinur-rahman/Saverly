@@ -84,12 +84,12 @@ export default function LandingPage() {
             </div>
             <div className="mt-12 sm:mt-16 max-w-4xl mx-auto">
                <Image
-                src="https://placehold.co/1200x600.png"
-                alt="সেভারলি অ্যাপ ড্যাশবোর্ডের মকআপ"
+                src="https://placehold.co/1200x675.png"
+                alt="সেভারলি অ্যাপ ড্যাশবোর্ডের একটি প্রিভিউ"
                 width={1200}
-                height={600}
+                height={675}
                 className="rounded-lg shadow-2xl object-cover"
-                data-ai-hint="app dashboard"
+                data-ai-hint="finance dashboard"
                 priority
               />
             </div>
@@ -103,14 +103,14 @@ export default function LandingPage() {
               <h2 className="text-3xl sm:text-4xl font-bold font-headline">কেন সেভারলি?</h2>
               <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ। সেভারলি আপনাকে আপনার অর্থের উপর পূর্ণ নিয়ন্ত্রণ দেয়।</p>
             </div>
-            <div className="mb-12 sm:mb-16 max-w-3xl mx-auto">
+            <div className="mb-12 sm:mb-16 max-w-xs mx-auto"> {/* Adjusted max-width for a more vertical image */}
               <Image
-                src="https://placehold.co/800x500.png"
-                alt="সেভারলি অ্যাপের বিভিন্ন ফিচারের মকআপ"
-                width={800}
-                height={500}
-                className="rounded-lg shadow-xl object-cover"
-                data-ai-hint="features overview"
+                src="https://placehold.co/350x700.png" 
+                alt="সেভারলি মোবাইল অ্যাপের বিভিন্ন ফিচারের একটি উদাহরণ"
+                width={350}
+                height={700}
+                className="rounded-lg shadow-xl object-contain" /* object-contain might be better for mockups */
+                data-ai-hint="mobile finance"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
@@ -149,12 +149,12 @@ export default function LandingPage() {
               </div>
               <div className="lg:w-1/2">
                 <Image
-                  src="https://placehold.co/700x450.png"
-                  alt="সেভারলি অ্যাপের স্ক্রিনশট"
+                  src="https://placehold.co/700x400.png"
+                  alt="সেভারলি অ্যাপে আর্থিক ডেটা ভিজ্যুয়ালাইজেশন"
                   width={700}
-                  height={450}
+                  height={400}
                   className="rounded-lg shadow-2xl object-cover mx-auto"
-                  data-ai-hint="app analytics"
+                  data-ai-hint="financial charts"
                 />
               </div>
             </div>
@@ -172,5 +172,3 @@ export default function LandingPage() {
     </div>
   );
 }
-
-    
