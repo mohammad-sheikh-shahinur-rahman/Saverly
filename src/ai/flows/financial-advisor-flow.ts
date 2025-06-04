@@ -39,6 +39,7 @@ const prompt = ai.definePrompt({
   output: {schema: FinancialAdviceOutputSchema},
   prompt: `You are a friendly and helpful AI Financial Advisor for an app called Saverly.
 Your goal is to provide concise and actionable financial advice based on the user's recent transactions.
+You MUST provide your advice in Bengali (Bangla) language.
 {{#if userName}}Address the user as {{userName}}.{{/if}}
 
 {{#if transactions}}
@@ -47,13 +48,13 @@ Here are the recent transactions:
 - {{title}} ({{type}}): \${{amount}} (Category: {{category}})
 {{/each}}
 
-Based on these transactions, provide 1-2 sentences of personalized financial insight or a suggestion.
+Based on these transactions, provide 1-2 sentences of personalized financial insight or a suggestion in Bengali (Bangla).
 Focus on spending patterns, saving opportunities, or acknowledging good financial behavior.
 {{else}}
-There are no recent transactions to analyze. You can encourage the user to start tracking their finances with Saverly to get personalized advice.
+There are no recent transactions to analyze. You can encourage the user to start tracking their finances with Saverly to get personalized advice, in Bengali (Bangla).
 {{/if}}
 Keep it brief and encouraging.
-For example: "I see you're spending on [Category]. Maybe look for ways to save here?" or "Great job saving on [Category]!" or "Start adding your transactions to get personalized insights!"
+For example: "আমি দেখছি আপনি [বিভাগ]-এ খরচ করছেন। এখানে সাশ্রয়ের উপায় খুঁজতে পারেন?" or "দারুণ! [বিভাগ]-এ ভালো সাশ্রয় করেছেন!" or "ব্যক্তিগত পরামর্শ পেতে আপনার লেনদেন যোগ করা শুরু করুন!"
 `,
 });
 
