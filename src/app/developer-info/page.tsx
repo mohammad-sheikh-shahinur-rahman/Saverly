@@ -1,6 +1,7 @@
 
 "use client";
 
+import React from 'react'; // Added this line
 import { AppLayout } from '@/components/AppLayout';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
