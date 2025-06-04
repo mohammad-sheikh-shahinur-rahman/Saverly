@@ -17,36 +17,29 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SaverlyLogo } from '@/components/icons';
-import { useRouter } from 'next/navigation';
+import { useRouter } from 'next/navigation'; 
 
-const signupSchema = z.object({
-  name: z.string().min(2, { message: "নাম কমপক্ষে ২ অক্ষরের হতে হবে।" }),
+const loginSchema = z.object({
   email: z.string().email({ message: "অবৈধ ইমেইল ঠিকানা।" }),
   password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" }),
-  confirmPassword: z.string(),
-}).refine((data) => data.password === data.confirmPassword, {
-  message: "পাসওয়ার্ড মেলেনি",
-  path: ["confirmPassword"],
 });
 
-type SignupFormValues = z.infer<typeof signupSchema>;
+type LoginFormValues = z.infer<typeof loginSchema>;
 
-export default function SignupPage() {
-  const router = useRouter();
+export default function LoginPage() {
+  const router = useRouter(); 
 
-  const form = useForm<SignupFormValues>({
-    resolver: zodResolver(signupSchema),
+  const form = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
-      name: "",
       email: "",
       password: "",
-      confirmPassword: "",
     },
   });
 
-  function onSubmit(values: SignupFormValues) {
+  function onSubmit(values: LoginFormValues) {
     console.log(values);
-    router.push('/dashboard');
+    router.push('/dashboard'); 
   }
 
   return (
@@ -56,25 +49,12 @@ export default function SignupPage() {
           <Link href="/" aria-label="হোমপেজে ফিরে যান">
             <SaverlyLogo className="h-16 w-16 text-primary mx-auto mb-4" />
           </Link>
-          <CardTitle className="font-headline text-3xl">অ্যাকাউন্ট তৈরি করুন</CardTitle>
-          <CardDescription>আপনার আর্থিক ট্র্যাকিং শুরু করতে সেভারলিতে যোগ দিন।</CardDescription>
+          <CardTitle className="font-headline text-3xl">সেভারলিতে স্বাগতম</CardTitle>
+          <CardDescription>আপনার আর্থিক ব্যবস্থাপনার জন্য সাইন ইন করুন।</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
             <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>পূর্ণ নাম</FormLabel>
-                    <FormControl>
-                      <Input placeholder="যেমনঃ জন ডো" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <FormField
                 control={form.control}
                 name="email"
@@ -101,29 +81,22 @@ export default function SignupPage() {
                   </FormItem>
                 )}
               />
-              <FormField
-                control={form.control}
-                name="confirmPassword"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>পাসওয়ার্ড নিশ্চিত করুন</FormLabel>
-                    <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
               <Button type="submit" className="w-full">
-                সাইন আপ
+                সাইন ইন
               </Button>
             </form>
           </Form>
           <div className="mt-6 text-center text-sm">
             <p className="text-muted-foreground">
-              ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
-              <Link href="/auth/login" className="font-medium text-primary hover:underline">
-                সাইন ইন
+              অ্যাকাউন্ট নেই?{' '}
+              <Link href="/signup" className="font-medium text-primary hover:underline">
+                সাইন আপ
+              </Link>
+            </p>
+            <p className="mt-2 text-muted-foreground">
+              অথবা অতিথি হিসেবে{' '}
+              <Link href="/dashboard" className="font-medium text-primary hover:underline">
+                চালিয়ে যান
               </Link>
             </p>
           </div>

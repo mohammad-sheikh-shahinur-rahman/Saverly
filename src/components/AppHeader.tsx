@@ -43,7 +43,8 @@ export function AppHeader() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/">
+                {/* Point to the new landing page on logout */}
+                <Link href="/"> 
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>লগ আউট</span>
                 </Link>
