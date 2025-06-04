@@ -19,11 +19,24 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SaverlyLogo } from '@/components/icons';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Phone } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { auth } from '@/lib/firebase';
+import { RecaptchaVerifier, signInWithPhoneNumber, type ConfirmationResult } from 'firebase/auth';
+import { useToast } from "@/hooks/use-toast";
+
+// Extend window type to include recaptchaVerifier and confirmationResult
+declare global {
+  interface Window { 
+    recaptchaVerifier?: RecaptchaVerifier;
+    confirmationResult?: ConfirmationResult;
+  }
+}
 
 const phoneSchema = z.object({
   phoneNumber: z.string()
     .min(10, { message: "ফোন নম্বর কমপক্ষে ১০ সংখ্যার হতে হবে।" })
-    .regex(/^\+?[0-9\s-()]*$/, { message: "অবৈধ ফোন নম্বর ফরম্যাট।" }),
+    // Example regex allows + followed by digits, spaces, hyphens, parentheses
+    .regex(/^\+?[0-9\s-()]*$/, { message: "অবৈধ ফোন নম্বর ফরম্যাট। একটি দেশের কোডসহ নম্বর দিন (যেমন +৮৮০...)।" }),
 });
 
 type PhoneFormValues = z.infer<typeof phoneSchema>;
@@ -32,38 +45,79 @@ export default function PhoneSignInPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const isSignUp = searchParams.get('isSignUp') === 'true';
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
+  const recaptchaContainerRef = useRef<HTMLDivElement>(null);
+
 
   const form = useForm<PhoneFormValues>({
     resolver: zodResolver(phoneSchema),
     defaultValues: {
-      phoneNumber: "",
+      phoneNumber: "+৮৮০", // Default to Bangladesh country code
     },
   });
+  
+  useEffect(() => {
+    if (typeof window !== 'undefined' && recaptchaContainerRef.current && !window.recaptchaVerifier) {
+      window.recaptchaVerifier = new RecaptchaVerifier(auth, recaptchaContainerRef.current, {
+        'size': 'invisible',
+        'callback': (response: any) => {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+          // This callback is usually for 'normal' size reCAPTCHA.
+          // For 'invisible', it's often handled directly by the signInWithPhoneNumber call.
+          console.log("reCAPTCHA verified:", response);
+        },
+        'expired-callback': () => {
+          toast({ title: "ত্রুটি", description: "reCAPTCHA মেয়াদ উত্তীর্ণ হয়েছে। আবার চেষ্টা করুন।", variant: "destructive" });
+          setIsLoading(false);
+        }
+      });
+      window.recaptchaVerifier.render().then((widgetId) => {
+        // @ts-ignore
+        window.recaptchaWidgetId = widgetId;
+      });
+    }
+     // Cleanup function to clear verifier if component unmounts or auth changes
+    return () => {
+        if (window.recaptchaVerifier) {
+            // window.recaptchaVerifier.clear(); // This can cause issues if called prematurely. Be cautious.
+        }
+    };
+  }, [toast]);
 
-  function onSubmit(values: PhoneFormValues) {
-    // ** Firebase Logic Placeholder **
-    // 1. Initialize RecaptchaVerifier here (e.g., on a div with id 'recaptcha-container')
-    //    Make sure the 'recaptcha-container' div exists in the JSX.
-    //    const recaptchaVerifier = new RecaptchaVerifier(auth, 'recaptcha-container', {
-    //      'size': 'invisible', // or 'normal'
-    //      'callback': (response) => { /* reCAPTCHA solved, allow signInWithPhoneNumber. */ },
-    //      'expired-callback': () => { /* Response expired. Ask user to solve reCAPTCHA again. */ }
-    //    });
-    // 2. Call signInWithPhoneNumber(auth, values.phoneNumber, recaptchaVerifier)
-    //    .then((confirmationResult) => {
-    //      // SMS sent. Save confirmationResult to pass to OTP verification page.
-    //      // e.g., store it in a state management solution or pass via router state if possible.
-    //      // For this demo, we'll just navigate.
-    //      console.log("OTP sent to", values.phoneNumber);
-    //      router.push(`/auth/verify-otp?phoneNumber=${encodeURIComponent(values.phoneNumber)}`);
-    //    }).catch((error) => {
-    //      // Handle error (e.g., invalid phone number, quota exceeded)
-    //      console.error("Error sending OTP:", error);
-    //      form.setError("phoneNumber", { type: "manual", message: "OTP পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।" });
-    //    });
-    console.log("Attempting to send OTP to:", values.phoneNumber);
-    // For demo, directly navigate to OTP verification page
-    router.push(`/auth/verify-otp?phoneNumber=${encodeURIComponent(values.phoneNumber)}&isSignUp=${isSignUp}`);
+
+  async function onSubmit(values: PhoneFormValues) {
+    setIsLoading(true);
+    if (!window.recaptchaVerifier) {
+      toast({ title: "ত্রুটি", description: "reCAPTCHA প্রস্তুত নয়। পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।", variant: "destructive" });
+      setIsLoading(false);
+      return;
+    }
+
+    try {
+      const confirmationResult = await signInWithPhoneNumber(auth, values.phoneNumber, window.recaptchaVerifier);
+      window.confirmationResult = confirmationResult; // Store for next step
+      toast({ title: "OTP পাঠানো হয়েছে", description: `${values.phoneNumber}-এ একটি যাচাইকরণ কোড পাঠানো হয়েছে।` });
+      router.push(`/auth/verify-otp?phoneNumber=${encodeURIComponent(values.phoneNumber)}&isSignUp=${isSignUp}`);
+    } catch (error: any) {
+      console.error("Error sending OTP:", error);
+      let errorMessage = "OTP পাঠাতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
+       if (error.code === 'auth/invalid-phone-number') {
+        errorMessage = "অবৈধ ফোন নম্বর। দেশের কোডসহ সঠিক ফরম্যাটে দিন।";
+      } else if (error.code === 'auth/too-many-requests') {
+        errorMessage = "অনেকবার চেষ্টা করা হয়েছে। কিছুক্ষণ পর আবার চেষ্টা করুন।";
+      } else if (error.code === 'auth/captcha-check-failed') {
+        errorMessage = "reCAPTCHA যাচাইকরণ ব্যর্থ হয়েছে। অনুগ্রহ করে পৃষ্ঠাটি রিফ্রেশ করে আবার চেষ্টা করুন।";
+         if (window.recaptchaVerifier && typeof window.recaptchaVerifier.render === 'function') {
+           // @ts-ignore
+           grecaptcha.reset(window.recaptchaWidgetId);
+        }
+      }
+      toast({ title: "ত্রুটি", description: errorMessage, variant: "destructive" });
+      form.setError("phoneNumber", { type: "manual", message: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
   return (
@@ -74,7 +128,7 @@ export default function PhoneSignInPage() {
             <SaverlyLogo className="h-16 w-16 text-primary mx-auto mb-4" />
           </Link>
           <CardTitle className="font-headline text-3xl">ফোন নম্বর দিয়ে {isSignUp ? 'সাইন আপ' : 'সাইন ইন'}</CardTitle>
-          <CardDescription>আপনার ফোন নম্বর প্রবেশ করান। আমরা আপনাকে একটি যাচাইকরণ কোড পাঠাব।</CardDescription>
+          <CardDescription>আপনার ফোন নম্বর প্রবেশ করান (দেশের কোডসহ)। আমরা আপনাকে একটি যাচাইকরণ কোড পাঠাব।</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -88,18 +142,18 @@ export default function PhoneSignInPage() {
                     <FormControl>
                       <div className="relative">
                         <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input type="tel" placeholder="যেমনঃ +৮৮০১৭xxxxxxxx" {...field} className="pl-10" />
+                        <Input type="tel" placeholder="যেমনঃ +৮৮০১৭xxxxxxxx" {...field} className="pl-10" disabled={isLoading}/>
                       </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              {/* Invisible reCAPTCHA container (needed for Firebase Phone Auth on web) */}
-              <div id="recaptcha-container"></div>
+              {/* Invisible reCAPTCHA container */}
+              <div ref={recaptchaContainerRef} id="recaptcha-container"></div>
 
-              <Button type="submit" className="w-full">
-                OTP পাঠান
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'লোড হচ্ছে...' : 'OTP পাঠান'}
               </Button>
             </form>
           </Form>

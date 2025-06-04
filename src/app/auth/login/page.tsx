@@ -20,6 +20,10 @@ import { SaverlyLogo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
 import { Phone, Mail } from 'lucide-react';
+import { auth } from '@/lib/firebase'; // Firebase auth instance
+import { signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
+import { useToast } from "@/hooks/use-toast";
+import React, { useState } from 'react';
 
 const GoogleIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
@@ -37,6 +41,8 @@ type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const router = useRouter(); 
+  const { toast } = useToast();
+  const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -46,22 +52,46 @@ export default function LoginPage() {
     },
   });
 
-  function onSubmit(values: LoginFormValues) {
-    console.log("Email/Password Login:", values);
-    // For demo purposes, navigate to dashboard.
-    // In a real app, you would authenticate here.
-    router.push('/dashboard'); 
+  async function onSubmit(values: LoginFormValues) {
+    setIsLoading(true);
+    try {
+      await signInWithEmailAndPassword(auth, values.email, values.password);
+      toast({ title: "সফল", description: "সফলভাবে সাইন ইন করেছেন।" });
+      router.push('/dashboard'); 
+    } catch (error: any) {
+      console.error("Email/Password Sign In Error:", error);
+      let errorMessage = "সাইন ইন করতে সমস্যা হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
+      if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+        errorMessage = "আপনার ইমেইল অথবা পাসওয়ার্ড সঠিক নয়।";
+      }
+      toast({ title: "ত্রুটি", description: errorMessage, variant: "destructive" });
+      form.setError("email", { type: "manual", message: " " }); // Clear previous specific errors by setting a space
+      form.setError("password", { type: "manual", message: errorMessage });
+    } finally {
+      setIsLoading(false);
+    }
   }
 
-  const handleGoogleSignIn = () => {
-    console.log("Attempting Google Sign In...");
-    // Firebase Google Sign In logic would go here
-    // For demo, navigate to dashboard
-    router.push('/dashboard');
+  const handleGoogleSignIn = async () => {
+    setIsLoading(true);
+    const provider = new GoogleAuthProvider();
+    try {
+      await signInWithPopup(auth, provider);
+      toast({ title: "সফল", description: "গুগল দিয়ে সফলভাবে সাইন ইন করেছেন।" });
+      router.push('/dashboard');
+    } catch (error: any) {
+      console.error("Google Sign In Error:", error);
+      let errorMessage = "গুগল দিয়ে সাইন ইন করতে সমস্যা হয়েছে।";
+      if (error.code === 'auth/popup-closed-by-user') {
+        errorMessage = "পপ-আপ বন্ধ করে দেওয়া হয়েছে। অনুগ্রহ করে আবার চেষ্টা করুন।";
+      }
+      toast({ title: "ত্রুটি", description: errorMessage, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handlePhoneSignIn = () => {
-    console.log("Navigating to Phone Sign In page...");
     router.push('/auth/phone-signin'); 
   };
 
@@ -88,7 +118,7 @@ export default function LoginPage() {
                     <FormControl>
                       <div className="relative">
                         <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                        <Input placeholder="you@example.com" {...field} className="pl-10" />
+                        <Input placeholder="you@example.com" {...field} className="pl-10" disabled={isLoading} />
                       </div>
                     </FormControl>
                     <FormMessage />
@@ -102,14 +132,14 @@ export default function LoginPage() {
                   <FormItem>
                     <FormLabel>পাসওয়ার্ড</FormLabel>
                     <FormControl>
-                      <Input type="password" placeholder="••••••••" {...field} />
+                      <Input type="password" placeholder="••••••••" {...field} disabled={isLoading} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                সাইন ইন
+              <Button type="submit" className="w-full" disabled={isLoading}>
+                {isLoading ? 'লোড হচ্ছে...' : 'সাইন ইন'}
               </Button>
             </form>
           </Form>
@@ -121,11 +151,11 @@ export default function LoginPage() {
           </div>
 
           <div className="space-y-3">
-            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
+            <Button variant="outline" className="w-full" onClick={handleGoogleSignIn} disabled={isLoading}>
               <GoogleIcon />
-              <span className="ml-2">গুগল দিয়ে সাইন ইন করুন</span>
+              <span className="ml-2">{isLoading ? 'লোড হচ্ছে...' : 'গুগল দিয়ে সাইন ইন করুন'}</span>
             </Button>
-            <Button variant="outline" className="w-full" onClick={handlePhoneSignIn}>
+            <Button variant="outline" className="w-full" onClick={handlePhoneSignIn} disabled={isLoading}>
               <Phone className="h-4 w-4" />
               <span className="ml-2">ফোন নম্বর দিয়ে সাইন ইন করুন</span>
             </Button>
