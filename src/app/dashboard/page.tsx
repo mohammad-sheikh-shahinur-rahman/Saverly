@@ -5,20 +5,30 @@ import { AppLayout } from '@/components/AppLayout';
 import { SummaryCard } from '@/components/dashboard/SummaryCard';
 import { ExpensesBarChart } from '@/components/dashboard/ExpensesBarChart';
 import { CategoryPieChart } from '@/components/dashboard/CategoryPieChart';
-import { TrendingUp, TrendingDown, Scale, DollarSign, Sparkles, SendHorizonal } from 'lucide-react';
+import { TrendingUp, TrendingDown, Scale, DollarSign, Sparkles, SendHorizonal, Lightbulb, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
-import { Input as UiInput } from "@/components/ui/input"; // Renamed to avoid conflict with Genkit's z.input
+import { Card, CardContent, CardHeader, CardTitle, CardFooter, CardDescription } from "@/components/ui/card";
+import { Input as UiInput } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import React, { useState, useRef, useEffect } from 'react';
-import { getFinancialChatResponse, type ChatInput, type ChatResponse } from '@/ai/flows/financial-advisor-flow'; // Updated import
-import type { FinancialAdviceInput } from '@/ai/flows/financial-advisor-flow'; // Keep for transaction type
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { getFinancialChatResponse, type ChatInput, type ChatResponse } from '@/ai/flows/financial-advisor-flow';
+import { getSavingsTip, type SavingsTipInput, type SavingsTipResponse } from '@/ai/flows/savings-tip-flow';
+import type { FinancialAdviceInput } from '@/ai/flows/financial-advisor-flow'; // Keep for transaction type, though a bit redundant now
 
 interface ChatMessage {
   role: 'user' | 'ai';
   text: string;
 }
+
+// Simplified Transaction type for local use, matching SavingsTipInput's expectation
+type TransactionForTip = {
+  title: string;
+  type: "income" | "expense";
+  amount: number;
+  category: string;
+};
+
 
 export default function DashboardPage() {
   const totalIncome = "৳৫,২৩০.০০";
@@ -31,10 +41,16 @@ export default function DashboardPage() {
   const [chatError, setChatError] = useState<string | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const recentTransactionsForAI: FinancialAdviceInput['transactions'] = [
+  const [savingsTip, setSavingsTip] = useState<string | null>(null);
+  const [isLoadingTip, setIsLoadingTip] = useState(false);
+  const [tipError, setTipError] = useState<string | null>(null);
+
+  const recentTransactionsForAI: TransactionForTip[] = [ // Updated type here
       { title: "বেতন", type: "income", amount: 2500.00, category: "কাজ" },
       { title: "মুদি বাজার", type: "expense", amount: 75.50, category: "খাবার" },
       { title: "ভাড়া", type: "expense", amount: 800.00, category: "আবাসন" },
+      { title: "সকালের নাস্তা", type: "expense", amount: 12.00, category: "খাবার" },
+      { title: "মোবাইল বিল", type: "expense", amount: 20.00, category: "অন্যান্য" },
   ];
 
   useEffect(() => {
@@ -42,6 +58,29 @@ export default function DashboardPage() {
       scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
     }
   }, [chatMessages]);
+
+  const fetchSavingsTip = useCallback(async () => {
+    setIsLoadingTip(true);
+    setTipError(null);
+    try {
+      const input: SavingsTipInput = {
+        transactions: recentTransactionsForAI,
+        userName: "ব্যবহারকারী",
+      };
+      const result: SavingsTipResponse = await getSavingsTip(input);
+      setSavingsTip(result.tip);
+    } catch (error) {
+      console.error("AI সেভিংস টিপ পেতে ত্রুটি:", error);
+      setTipError("দুঃখিত, এই মুহূর্তে সেভিংস টিপ পাওয়া যাচ্ছে না।");
+      setSavingsTip(null);
+    } finally {
+      setIsLoadingTip(false);
+    }
+  }, [recentTransactionsForAI]); // Add dependencies if they change
+
+  useEffect(() => {
+    fetchSavingsTip();
+  }, [fetchSavingsTip]);
 
   const handleSendMessage = async () => {
     if (!currentUserMessage.trim()) return;
@@ -60,7 +99,12 @@ export default function DashboardPage() {
       
       const input: ChatInput = {
           userQuery: newUserMessage.text,
-          transactions: recentTransactionsForAI, // Provide transaction context
+          transactions: recentTransactionsForAI.map(t => ({ // Map to ChatInput's transaction type
+            title: t.title,
+            type: t.type,
+            amount: t.amount,
+            category: t.category,
+          })),
           userName: "ব্যবহারকারী", 
           chatHistory: historyForAI,
       };
@@ -69,8 +113,6 @@ export default function DashboardPage() {
     } catch (error) {
       console.error("AI চ্যাট প্রতিক্রিয়া পেতে ত্রুটি:", error);
       setChatError("দুঃখিত, এই মুহূর্তে AI এর সাথে সংযোগ করা যাচ্ছে না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।");
-      // Optionally add the error message to chat for visibility
-      // setChatMessages(prev => [...prev, { role: 'ai', text: "একটি ত্রুটি ঘটেছে।" }]);
     } finally {
       setIsLoadingResponse(false);
     }
@@ -115,6 +157,28 @@ export default function DashboardPage() {
           <CategoryPieChart />
         </div>
         
+        <Card className="shadow-lg">
+          <CardHeader>
+            <CardTitle className="font-headline text-lg flex items-center gap-2">
+              <Lightbulb className="h-5 w-5 text-yellow-500" />
+              স্মার্ট সঞ্চয় টিপ
+            </CardTitle>
+            <CardDescription>আপনার লেনদেনের উপর ভিত্তি করে AI তৈরি টিপস।</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {isLoadingTip && <p className="text-muted-foreground">টিপ লোড হচ্ছে...</p>}
+            {tipError && <p className="text-destructive">{tipError}</p>}
+            {savingsTip && !isLoadingTip && <p className="text-foreground">{savingsTip}</p>}
+            {!isLoadingTip && !savingsTip && !tipError && <p className="text-muted-foreground">কোনো টিপ পাওয়া যায়নি।</p>}
+          </CardContent>
+          <CardFooter>
+            <Button variant="outline" onClick={fetchSavingsTip} disabled={isLoadingTip}>
+              <RefreshCw className={`mr-2 h-4 w-4 ${isLoadingTip ? 'animate-spin' : ''}`} />
+              নতুন টিপ পান
+            </Button>
+          </CardFooter>
+        </Card>
+
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> 
             <Card className="shadow-lg">
                 <CardHeader>
@@ -175,8 +239,7 @@ export default function DashboardPage() {
                     </Button>
                 </CardContent>
             </Card>
-            {/* AI Financial Advisor Chat Card - This replaces the old Quick Actions and AI Advisor card */}
-            <Card className="shadow-lg lg:col-span-1 flex flex-col h-[500px]"> {/* Adjusted for a single column */}
+            <Card className="shadow-lg lg:col-span-1 flex flex-col h-[500px]">
                 <CardHeader>
                     <CardTitle className="font-headline text-lg flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-primary" />

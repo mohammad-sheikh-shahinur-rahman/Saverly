@@ -7,9 +7,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
-import { PlusCircle, Edit, Trash2, Filter, Search, TrendingUp, TrendingDown } from 'lucide-react';
+import { PlusCircle, Edit, Trash2, Filter, Search, TrendingUp, TrendingDown, Download } from 'lucide-react';
 import Link from 'next/link';
 import { useState, useMemo } from 'react';
+import { useToast } from "@/hooks/use-toast";
 
 // Mock data, consider translating categories if they are fixed
 const mockTransactions = [
@@ -25,36 +26,76 @@ export default function TransactionsPage() {
   const [searchTerm, setSearchTerm] = useState('');
   const [categoryFilter, setCategoryFilter] = useState('all');
   const [dateFilter, setDateFilter] = useState(''); // e.g., '2024-07'
+  const { toast } = useToast();
 
   const categories = useMemo(() => {
-    // For dynamic categories, ensure they are translated at source or use an i18n key
     const allCategories = mockTransactions.map(t => t.category);
     return ['all', ...Array.from(new Set(allCategories))];
   }, []);
+
+  const getCategoryDisplay = (categoryValue: string) => {
+    const translations: { [key: string]: string } = {
+      'all': 'সব বিভাগ',
+      'কাজ': 'কাজ',
+      'খাবার': 'খাবার',
+      'আবাসন': 'আবাসন',
+      'পরিবহন': 'পরিবহন',
+      'বিনোদন': 'বিনোদন',
+      'স্বাস্থ্য': 'স্বাস্থ্য',
+      'অন্যান্য': 'অন্যান্য',
+    };
+    return translations[categoryValue] || categoryValue;
+  };
 
   const filteredTransactions = useMemo(() => {
     return mockTransactions.filter(transaction => {
       const matchesSearch = transaction.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                             (transaction.note && transaction.note.toLowerCase().includes(searchTerm.toLowerCase()));
-      const matchesCategory = categoryFilter === 'all' || transaction.category === categoryFilter;
+      const matchesCategory = categoryFilter === 'all' || transaction.category === getCategoryDisplay(transaction.category) || transaction.category === categoryFilter; // Adjusted to handle original and display values
       const matchesDate = dateFilter === '' || transaction.date.startsWith(dateFilter);
       return matchesSearch && matchesCategory && matchesDate;
     });
   }, [searchTerm, categoryFilter, dateFilter]);
-  
-  const getCategoryDisplay = (categoryValue: string) => {
-    // This is a simple example. For a real app, use a proper i18n solution.
-    const translations: { [key: string]: string } = {
-      'all': 'সব বিভাগ',
-      'Work': 'কাজ',
-      'Food': 'খাবার',
-      'Housing': 'আবাসন',
-      'Transport': 'পরিবহন',
-      'Entertainment': 'বিনোদন',
-      'Health': 'স্বাস্থ্য',
-      'Other': 'অন্যান্য',
-    };
-    return translations[categoryValue] || categoryValue;
+
+
+  const handleExportCSV = () => {
+    if (filteredTransactions.length === 0) {
+      toast({
+        title: "ত্রুটি",
+        description: "রপ্তানি করার জন্য কোনো লেনদেন নেই।",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const headers = ["তারিখ", "শিরোনাম", "বিভাগ", "পরিমাণ (৳)", "ধরন", "নোট"];
+    const csvRows = [
+      headers.join(','),
+      ...filteredTransactions.map(t => [
+        t.date,
+        `"${t.title.replace(/"/g, '""')}"`,
+        getCategoryDisplay(t.category),
+        t.amount.toFixed(2),
+        t.type === 'income' ? 'আয়' : 'ব্যয়',
+        `"${(t.note || '').replace(/"/g, '""')}"`
+      ].join(','))
+    ];
+    const csvString = csvRows.join('\n');
+    const blob = new Blob([`\uFEFF${csvString}`], { type: 'text/csv;charset=utf-8;' }); // Added BOM for Excel compatibility
+    const link = document.createElement('a');
+    if (link.download !== undefined) {
+      const url = URL.createObjectURL(blob);
+      link.setAttribute('href', url);
+      link.setAttribute('download', 'transactions_saverly.csv');
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      toast({
+        title: "সফল",
+        description: "লেনদেনগুলো CSV হিসাবে এক্সপোর্ট করা হয়েছে।",
+      });
+    }
   };
 
 
@@ -63,11 +104,16 @@ export default function TransactionsPage() {
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
           <h1 className="text-3xl font-bold font-headline">লেনদেন</h1>
-          <Button asChild>
-            <Link href="/transactions/new">
-              <PlusCircle className="mr-2 h-5 w-5" /> লেনদেন যোগ করুন
-            </Link>
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={handleExportCSV}>
+              <Download className="mr-2 h-5 w-5" /> এক্সপোর্ট (CSV)
+            </Button>
+            <Button asChild>
+              <Link href="/transactions/new">
+                <PlusCircle className="mr-2 h-5 w-5" /> লেনদেন যোগ করুন
+              </Link>
+            </Button>
+          </div>
         </div>
 
         <Card className="shadow-lg">
@@ -124,7 +170,7 @@ export default function TransactionsPage() {
               <TableBody>
                 {filteredTransactions.map((transaction) => (
                   <TableRow key={transaction.id}>
-                    <TableCell>{transaction.date}</TableCell> {/* Date formatting might need localization */}
+                    <TableCell>{transaction.date}</TableCell>
                     <TableCell className="font-medium">{transaction.title}</TableCell>
                     <TableCell>{getCategoryDisplay(transaction.category)}</TableCell>
                     <TableCell className={`text-right font-semibold ${transaction.type === 'income' ? 'text-green-500' : 'text-red-500'}`}>
