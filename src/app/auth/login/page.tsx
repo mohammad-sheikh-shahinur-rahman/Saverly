@@ -39,6 +39,8 @@ export default function LoginPage() {
 
   function onSubmit(values: LoginFormValues) {
     console.log(values);
+    // For demo purposes, navigate to dashboard.
+    // In a real app, you would authenticate here.
     router.push('/dashboard'); 
   }
 
@@ -96,7 +98,7 @@ export default function LoginPage() {
             <p className="mt-2 text-muted-foreground">
               অথবা অতিথি হিসেবে{' '}
               <Link href="/dashboard" className="font-medium text-primary hover:underline">
-                চালিয়ে যান
+                চালিয়ে যান {/* This allows bypassing login for demo */}
               </Link>
             </p>
           </div>
