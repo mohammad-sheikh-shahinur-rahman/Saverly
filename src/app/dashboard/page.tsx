@@ -14,14 +14,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { getFinancialChatResponse, type ChatInput, type ChatResponse } from '@/ai/flows/financial-advisor-flow';
 import { getSavingsTip, type SavingsTipInput, type SavingsTipResponse } from '@/ai/flows/savings-tip-flow';
-import type { FinancialAdviceInput } from '@/ai/flows/financial-advisor-flow'; // Keep for transaction type, though a bit redundant now
+// type FinancialAdviceInput is not directly used but its schema parts are in ChatInput.
 
 interface ChatMessage {
   role: 'user' | 'ai';
   text: string;
 }
 
-// Simplified Transaction type for local use, matching SavingsTipInput's expectation
 type TransactionForTip = {
   title: string;
   type: "income" | "expense";
@@ -43,9 +42,11 @@ export default function DashboardPage() {
 
   const [savingsTip, setSavingsTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(false);
-  const [tipError, setTipError] = useState<string | null>(null);
+  const [tipError, setTipError] = useState<string | null>(null); // This can still be used for general errors if needed, or removed if fallback covers all.
+  const [isFallbackTip, setIsFallbackTip] = useState(false);
 
-  const recentTransactionsForAI: TransactionForTip[] = [ // Updated type here
+
+  const recentTransactionsForAI: TransactionForTip[] = [
       { title: "বেতন", type: "income", amount: 2500.00, category: "কাজ" },
       { title: "মুদি বাজার", type: "expense", amount: 75.50, category: "খাবার" },
       { title: "ভাড়া", type: "expense", amount: 800.00, category: "আবাসন" },
@@ -62,6 +63,7 @@ export default function DashboardPage() {
   const fetchSavingsTip = useCallback(async () => {
     setIsLoadingTip(true);
     setTipError(null);
+    setIsFallbackTip(false);
     try {
       const input: SavingsTipInput = {
         transactions: recentTransactionsForAI,
@@ -71,12 +73,16 @@ export default function DashboardPage() {
       setSavingsTip(result.tip);
     } catch (error) {
       console.error("AI সেভিংস টিপ পেতে ত্রুটি:", error);
-      setTipError("দুঃখিত, এই মুহূর্তে সেভিংস টিপ পাওয়া যাচ্ছে না।");
-      setSavingsTip(null);
+      const fallbackTip = "সাধারণ সঞ্চয়ের একটি ভালো উপায় হলো প্রতি মাসের শুরুতে একটি নির্দিষ্ট পরিমাণ টাকা সরিয়ে রাখা।";
+      setSavingsTip(fallbackTip);
+      setIsFallbackTip(true);
+      // Set a general error message or a specific one if desired.
+      // For a 503, a fallback might be better than a prominent error message.
+      // setTipError("দুঃখিত, এই মুহূর্তে AI টিপ পাওয়া যাচ্ছে না। এখানে একটি সাধারণ টিপ দেওয়া হলো।");
     } finally {
       setIsLoadingTip(false);
     }
-  }, [recentTransactionsForAI]); // Add dependencies if they change
+  }, [recentTransactionsForAI]);
 
   useEffect(() => {
     fetchSavingsTip();
@@ -99,7 +105,7 @@ export default function DashboardPage() {
       
       const input: ChatInput = {
           userQuery: newUserMessage.text,
-          transactions: recentTransactionsForAI.map(t => ({ // Map to ChatInput's transaction type
+          transactions: recentTransactionsForAI.map(t => ({ 
             title: t.title,
             type: t.type,
             amount: t.amount,
@@ -167,9 +173,18 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             {isLoadingTip && <p className="text-muted-foreground">টিপ লোড হচ্ছে...</p>}
-            {tipError && <p className="text-destructive">{tipError}</p>}
-            {savingsTip && !isLoadingTip && <p className="text-foreground">{savingsTip}</p>}
-            {!isLoadingTip && !savingsTip && !tipError && <p className="text-muted-foreground">কোনো টিপ পাওয়া যায়নি।</p>}
+            {tipError && !isFallbackTip && <p className="text-destructive">{tipError}</p>} {/* Show error only if not a fallback */}
+            {savingsTip && !isLoadingTip && (
+              <>
+                <p className="text-foreground">{savingsTip}</p>
+                {isFallbackTip && (
+                  <p className="text-xs text-muted-foreground mt-1">(এটি একটি সাধারণ সঞ্চয় টিপ)</p>
+                )}
+              </>
+            )}
+            {!isLoadingTip && !savingsTip && !tipError && (
+              <p className="text-muted-foreground">এখন কোনো টিপ নেই।</p>
+            )}
           </CardContent>
           <CardFooter>
             <Button variant="outline" onClick={fetchSavingsTip} disabled={isLoadingTip}>
