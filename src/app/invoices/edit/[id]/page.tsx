@@ -9,7 +9,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Textarea } from '@/components/ui/textarea';
+// import { Textarea } from '@/components/ui/textarea'; // Not used, can be removed
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
@@ -19,7 +19,7 @@ import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as z from 'zod';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react'; // Added Suspense
 import { useToast } from '@/hooks/use-toast';
 import type { Invoice, InvoiceItem } from '../page'; // Import types
 
@@ -44,7 +44,7 @@ const invoiceSchema = z.object({
 
 type InvoiceFormValues = z.infer<typeof invoiceSchema>;
 
-export default function EditInvoicePage() {
+function EditInvoiceForm() { // Renamed from EditInvoicePage
   const router = useRouter();
   const params = useParams();
   const invoiceId = params.id as string;
@@ -56,7 +56,7 @@ export default function EditInvoicePage() {
   const form = useForm<InvoiceFormValues>({
     resolver: zodResolver(invoiceSchema),
     defaultValues: {
-        items: [{ name: '', quantity: 1, price: 0, id: crypto.randomUUID() }], // Ensure new items have an id
+        items: [{ name: '', quantity: 1, price: 0, id: crypto.randomUUID() }], 
     }
   });
 
@@ -71,7 +71,7 @@ export default function EditInvoicePage() {
             ...currentInvoice,
             issueDate: new Date(currentInvoice.issueDate),
             dueDate: new Date(currentInvoice.dueDate),
-            items: currentInvoice.items.map(item => ({...item, id: item.id || crypto.randomUUID()})), // Ensure items have ids
+            items: currentInvoice.items.map(item => ({...item, id: item.id || crypto.randomUUID()})),
           });
           setInvoiceNumber(currentInvoice.invoiceNumber);
         } else {
@@ -95,7 +95,7 @@ export default function EditInvoicePage() {
 
     const updatedInvoice: Invoice = {
       id: invoiceId,
-      invoiceNumber: invoiceNumber || '', // Should be set from useEffect
+      invoiceNumber: invoiceNumber || '', 
       ...values,
       issueDate: values.issueDate.toISOString(),
       dueDate: values.dueDate.toISOString(),
@@ -111,7 +111,7 @@ export default function EditInvoicePage() {
     if (invoiceIndex > -1) {
       invoices[invoiceIndex] = updatedInvoice;
     } else {
-      invoices.push(updatedInvoice); // Should not happen if editing existing
+      invoices.push(updatedInvoice); 
     }
     localStorage.setItem(INVOICES_STORAGE_KEY, JSON.stringify(invoices));
     
@@ -342,5 +342,14 @@ export default function EditInvoicePage() {
         </Card>
       </div>
     </AppLayout>
+  );
+}
+
+
+export default function EditInvoicePage() {
+  return (
+    <Suspense fallback={<div className="flex h-screen items-center justify-center p-8"><AppLayout><Card><CardHeader><CardTitle>লোড হচ্ছে...</CardTitle><CardContent><p>ইনভয়েস ডেটা লোড করা হচ্ছে...</p></CardContent></CardHeader></Card></AppLayout></div>}>
+      <EditInvoiceForm />
+    </Suspense>
   );
 }
