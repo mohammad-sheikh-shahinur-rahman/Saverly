@@ -18,6 +18,15 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SaverlyLogo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
+import { Separator } from '@/components/ui/separator';
+import { Phone, User, Mail } from 'lucide-react';
+
+// Placeholder Google icon
+const GoogleIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+    <path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.19,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.19,22C17.6,22 21.54,18.33 21.54,12.81C21.54,11.45 21.35,11.1 21.35,11.1Z"/>
+  </svg>
+);
 
 const signupSchema = z.object({
   name: z.string().min(2, { message: "নাম কমপক্ষে ২ অক্ষরের হতে হবে।" }),
@@ -45,9 +54,21 @@ export default function SignupPage() {
   });
 
   function onSubmit(values: SignupFormValues) {
-    console.log(values);
+    console.log("Email/Password Signup:", values);
     router.push('/dashboard');
   }
+
+  const handleGoogleSignUp = () => {
+    console.log("Attempting Google Sign Up...");
+    // Firebase Google Sign Up logic would go here
+    router.push('/dashboard');
+  };
+
+  const handlePhoneSignUp = () => {
+    console.log("Attempting Phone Sign Up...");
+    // Firebase Phone Sign Up logic would go here
+    alert("ফোন নম্বর দিয়ে সাইন আপ করার সুবিধা শীঘ্রই আসছে।");
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-background p-4">
@@ -61,7 +82,7 @@ export default function SignupPage() {
         </CardHeader>
         <CardContent>
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
               <FormField
                 control={form.control}
                 name="name"
@@ -69,7 +90,10 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>পূর্ণ নাম</FormLabel>
                     <FormControl>
-                      <Input placeholder="যেমনঃ জন ডো" {...field} />
+                      <div className="relative">
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="যেমনঃ জন ডো" {...field} className="pl-10" />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -82,7 +106,10 @@ export default function SignupPage() {
                   <FormItem>
                     <FormLabel>ইমেইল</FormLabel>
                     <FormControl>
-                      <Input placeholder="you@example.com" {...field} />
+                      <div className="relative">
+                        <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input placeholder="you@example.com" {...field} className="pl-10" />
+                      </div>
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -115,10 +142,28 @@ export default function SignupPage() {
                 )}
               />
               <Button type="submit" className="w-full">
-                সাইন আপ
+                সাইন আপ করুন
               </Button>
             </form>
           </Form>
+
+          <div className="my-6 flex items-center">
+            <Separator className="flex-grow" />
+            <span className="mx-4 text-sm text-muted-foreground">অথবা</span>
+            <Separator className="flex-grow" />
+          </div>
+
+          <div className="space-y-3">
+            <Button variant="outline" className="w-full" onClick={handleGoogleSignUp}>
+              <GoogleIcon />
+              <span className="ml-2">গুগল দিয়ে সাইন আপ করুন</span>
+            </Button>
+            <Button variant="outline" className="w-full" onClick={handlePhoneSignUp}>
+              <Phone className="h-4 w-4" />
+              <span className="ml-2">ফোন নম্বর দিয়ে সাইন আপ করুন</span>
+            </Button>
+          </div>
+
           <div className="mt-6 text-center text-sm">
             <p className="text-muted-foreground">
               ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}

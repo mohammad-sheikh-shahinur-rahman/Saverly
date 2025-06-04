@@ -3,13 +3,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Repeat, FileText, BellRing, NotebookText, Settings2 } from 'lucide-react';
+import { LayoutDashboard, Repeat, FileText, BellRing, NotebookText, Settings2, FileSpreadsheet } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
 const navItems = [
   { href: '/dashboard', label: 'ড্যাশবোর্ড', icon: LayoutDashboard },
   { href: '/transactions', label: 'লেনদেন', icon: Repeat },
+  { href: '/invoices', label: 'ইনভয়েস', icon: FileSpreadsheet },
   { href: '/reports', label: 'রিপোর্ট', icon: FileText },
   { href: '/reminders', label: 'রিমাইন্ডার', icon: BellRing },
   { href: '/notes', label: 'আর্থিক নোট', icon: NotebookText },
@@ -43,3 +44,4 @@ export function SidebarNav() {
     </SidebarMenu>
   );
 }
+

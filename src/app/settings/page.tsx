@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Palette, Globe, DollarSign, Bell, Fingerprint } from 'lucide-react';
-import { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { usePinLock } from '@/contexts/PinLockContext';
 import { PinDialog } from '@/components/PinDialog';
@@ -25,13 +25,17 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
+const CURRENCY_KEY = 'app_currency';
+const LANGUAGE_KEY = 'app_language';
+const REMINDER_NOTIF_KEY = 'app_reminder_notifications';
+const SUMMARY_NOTIF_KEY = 'app_summary_notifications';
 
 export default function SettingsPage() {
   const { toast } = useToast();
-  const { isPinEnabled, enablePin, disablePin, changePin } = usePinLock();
+  const { isPinEnabled, enablePin, disablePin } = usePinLock(); // Removed changePin for now
 
-  const [selectedCurrency, setSelectedCurrency] = useState('bdt'); // Default to BDT
-  const [selectedLanguage, setSelectedLanguage] = useState('bn'); // Default to Bangla
+  const [selectedCurrency, setSelectedCurrency] = useState('bdt');
+  const [selectedLanguage, setSelectedLanguage] = useState('bn');
   const [reminderNotifications, setReminderNotifications] = useState(true);
   const [summaryNotifications, setSummaryNotifications] = useState(false);
   
@@ -42,6 +46,42 @@ export default function SettingsPage() {
   const [currentPinForChange, setCurrentPinForChange] = useState('');
   const [changePinError, setChangePinError] = useState<string | null>(null);
 
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setSelectedCurrency(localStorage.getItem(CURRENCY_KEY) || 'bdt');
+      setSelectedLanguage(localStorage.getItem(LANGUAGE_KEY) || 'bn');
+      setReminderNotifications(localStorage.getItem(REMINDER_NOTIF_KEY) === 'true');
+      setSummaryNotifications(localStorage.getItem(SUMMARY_NOTIF_KEY) === 'true');
+    }
+  }, []);
+
+  const handleCurrencyChange = (value: string) => {
+    setSelectedCurrency(value);
+    localStorage.setItem(CURRENCY_KEY, value);
+    const currencyMap: {[key:string]: string} = {"usd": "USD ($)", "eur": "EUR (€)", "gbp": "GBP (£)", "inr": "INR (₹)", "bdt": "BDT (৳)"};
+    toast({ title: "মুদ্রা আপডেট করা হয়েছে", description: `মুদ্রা ${currencyMap[value]}-তে সেট করা হয়েছে।` });
+  };
+
+  const handleLanguageChange = (value: string) => {
+    setSelectedLanguage(value);
+    localStorage.setItem(LANGUAGE_KEY, value);
+    toast({ title: "ভাষা আপডেট করা হয়েছে", description: `ভাষা ${value === 'bn' ? 'বাংলা' : 'English'}-তে সেট করা হয়েছে। (সম্পূর্ণ UI অনুবাদ এই মুহূর্তে প্রয়োগ করা হয়নি)` });
+    if (value === 'en') {
+      alert("Changing language to English would typically reload the app or re-render with new translations. This prototype will just save the preference.");
+    }
+  };
+
+  const handleReminderNotifChange = (checked: boolean) => {
+    setReminderNotifications(checked);
+    localStorage.setItem(REMINDER_NOTIF_KEY, String(checked));
+    toast({ title: "বিজ্ঞপ্তি সেটিংস আপডেট করা হয়েছে", description: `রিমাইন্ডার বিজ্ঞপ্তি ${checked ? 'সক্ষম' : 'অক্ষম'} করা হয়েছে।` });
+  };
+
+  const handleSummaryNotifChange = (checked: boolean) => {
+    setSummaryNotifications(checked);
+    localStorage.setItem(SUMMARY_NOTIF_KEY, String(checked));
+    toast({ title: "বিজ্ঞপ্তি সেটিংস আপডেট করা হয়েছে", description: `সাপ্তাহিক সারাংশ ${checked ? 'সক্ষম' : 'অক্ষম'} করা হয়েছে।` });
+  };
 
   const handleEnablePinLockChange = (checked: boolean) => {
     if (checked) {
@@ -55,7 +95,6 @@ export default function SettingsPage() {
 
   const handleSetPin = (pin: string) => {
     enablePin(pin);
-    // Toast is shown in PinDialog
   };
 
   const handleChangePinRequest = () => {
@@ -79,7 +118,6 @@ export default function SettingsPage() {
   const handleActualPinChange = (newPin: string) => {
     enablePin(newPin); 
   };
-
 
   return (
     <AppLayout>
@@ -115,11 +153,7 @@ export default function SettingsPage() {
               <Label htmlFor="currency-selector" className="text-base">মুদ্রা</Label>
               <Select 
                 value={selectedCurrency} 
-                onValueChange={(value) => {
-                  setSelectedCurrency(value);
-                  const currencyMap: {[key:string]: string} = {"usd": "USD ($)", "eur": "EUR (€)", "gbp": "GBP (£)", "inr": "INR (₹)", "bdt": "BDT (৳)"};
-                  toast({ title: "মুদ্রা আপডেট করা হয়েছে", description: `মুদ্রা ${currencyMap[value]}-তে সেট করা হয়েছে। (পছন্দ এখনও সংরক্ষিত হয়নি)` });
-                }}
+                onValueChange={handleCurrencyChange}
               >
                 <SelectTrigger id="currency-selector" className="w-[180px]">
                   <SelectValue placeholder="মুদ্রা নির্বাচন করুন" />
@@ -133,13 +167,6 @@ export default function SettingsPage() {
                 </SelectContent>
               </Select>
             </div>
-             <div className="p-6 border border-dashed rounded-lg text-center bg-muted/20">
-                <DollarSign className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-                <h4 className="text-md font-semibold">আরও আর্থিক সেটিংস শীঘ্রই আসছে!</h4>
-                <p className="text-sm text-muted-foreground">
-                  যেমন ডিফল্ট অ্যাকাউন্ট, অর্থবছর শুরু ইত্যাদি।
-                </p>
-              </div>
           </CardContent>
         </Card>
         
@@ -156,10 +183,7 @@ export default function SettingsPage() {
               <Label htmlFor="language-selector" className="text-base">ভাষা</Label>
               <Select 
                 value={selectedLanguage}
-                onValueChange={(value) => {
-                  setSelectedLanguage(value);
-                  toast({ title: "ভাষা আপডেট করা হয়েছে", description: `ভাষা ${value === 'bn' ? 'বাংলা' : 'English'}-তে সেট করা হয়েছে। (UI অনুবাদ এবং পছন্দ সংরক্ষণ এখনও প্রয়োগ করা হয়নি)` });
-                }}
+                onValueChange={handleLanguageChange}
               >
                 <SelectTrigger id="language-selector" className="w-[180px]">
                   <SelectValue placeholder="ভাষা নির্বাচন করুন" />
@@ -167,7 +191,6 @@ export default function SettingsPage() {
                 <SelectContent>
                   <SelectItem value="bn">বাংলা</SelectItem>
                   <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="es" disabled>Español (শীঘ্রই আসছে)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -180,7 +203,7 @@ export default function SettingsPage() {
                 <Bell className="h-6 w-6 text-primary" />
                 বিজ্ঞপ্তি
             </CardTitle>
-            <CardDescription>আপনার বিজ্ঞপ্তি পছন্দগুলি পরিচালনা করুন।</CardDescription>
+            <CardDescription>আপনার বিজ্ঞপ্তি পছন্দগুলি পরিচালনা করুন (বর্তমানে ডেমো)।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -188,10 +211,7 @@ export default function SettingsPage() {
                 <Switch 
                   id="reminder-notifications" 
                   checked={reminderNotifications}
-                  onCheckedChange={(checked) => {
-                    setReminderNotifications(checked);
-                    toast({ title: "বিজ্ঞপ্তি সেটিংস আপডেট করা হয়েছে", description: `রিমাইন্ডার বিজ্ঞপ্তি ${checked ? 'সক্ষম' : 'অক্ষম'} করা হয়েছে। (পছন্দ এখনও সংরক্ষিত হয়নি)` });
-                  }}
+                  onCheckedChange={handleReminderNotifChange}
                 />
             </div>
             <div className="flex items-center justify-between">
@@ -199,10 +219,7 @@ export default function SettingsPage() {
                 <Switch 
                   id="summary-notifications" 
                   checked={summaryNotifications}
-                  onCheckedChange={(checked) => {
-                    setSummaryNotifications(checked);
-                    toast({ title: "বিজ্ঞপ্তি সেটিংস আপডেট করা হয়েছে", description: `সাপ্তাহিক সারাংশ ${checked ? 'সক্ষম' : 'অক্ষম'} করা হয়েছে। (পছন্দ এখনও সংরক্ষিত হয়নি)` });
-                  }}
+                  onCheckedChange={handleSummaryNotifChange}
                 />
             </div>
           </CardContent>
@@ -214,7 +231,7 @@ export default function SettingsPage() {
                 <Fingerprint className="h-6 w-6 text-primary" />
                 নিরাপত্তা
             </CardTitle>
-            <CardDescription>আপনার অ্যাপের নিরাপত্তা বৃদ্ধি করুন। পিন ডেমো উদ্দেশ্যে localStorage-এ সংরক্ষণ করা হয় এবং প্রোডাকশনের জন্য নিরাপদ নয়।</CardDescription>
+            <CardDescription>আপনার অ্যাপের নিরাপত্তা বৃদ্ধি করুন। পিন localStorage-এ সংরক্ষণ করা হয়।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
@@ -232,9 +249,6 @@ export default function SettingsPage() {
             >
               পিন পরিবর্তন করুন
             </Button>
-            <p className="text-sm text-muted-foreground">
-                বায়োমেট্রিক প্রমাণীকরণ (ফিঙ্গারপ্রিন্ট/ফেস আইডি) সাধারণত আপনার ডিভাইস/ব্রাউজার দ্বারা পরিচালিত হয় এবং ওয়েব অ্যাপের জন্য এখানে সরাসরি কনফিগার করা যায় না।
-            </p>
           </CardContent>
         </Card>
       </div>
@@ -244,7 +258,7 @@ export default function SettingsPage() {
         mode={pinDialogMode}
         onOpenChange={setIsPinDialogOpen}
         onPinSet={handleSetPin}
-        onPinChanged={handleActualPinChange}
+        onPinChanged={handleActualPinChange} // connect this prop
       />
       
       <AlertDialog open={isChangePinDialogOpen} onOpenChange={setIsChangePinDialogOpen}>
@@ -265,6 +279,7 @@ export default function SettingsPage() {
               onChange={(e) => setCurrentPinForChange(e.target.value.replace(/\D/g, '').slice(0,4))}
               maxLength={4}
               className="text-center tracking-[0.5em]"
+              autoComplete="new-password"
             />
           </div>
           <AlertDialogFooter>
@@ -273,7 +288,6 @@ export default function SettingsPage() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-
     </AppLayout>
   );
 }
