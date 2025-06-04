@@ -1,5 +1,5 @@
 
-import React from 'react'; // Added this line
+import React from 'react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SaverlyLogo } from '@/components/icons';
@@ -33,7 +33,7 @@ const features = [
     description: 'আপনার আর্থিক পরিকল্পনা, বাজারের বিশ্লেষণ, সঞ্চয়ের লক্ষ্য এবং অন্যান্য গুরুত্বপূর্ণ তথ্য নিরাপদে নোট করে রাখুন।',
   },
   {
-    icon: <LogIn className="h-10 w-10 text-primary mb-4" />, // Changed icon for better visual
+    icon: <LogIn className="h-10 w-10 text-primary mb-4" />, 
     title: 'একাধিক লগইন অপশন',
     description: 'ইমেইল, গুগল অ্যাকাউন্ট অথবা ফোন নম্বর ব্যবহার করে সহজেই সাইন ইন বা সাইন আপ করুন। আপনার পছন্দের পদ্ধতি বেছে নিন।',
   }
@@ -142,13 +142,11 @@ export default function LandingPage() {
             <p className="text-xl font-bold font-headline text-foreground">সেভারলি</p>
           </div>
           <p className="text-sm">&copy; {new Date().getFullYear()} সেভারলি। সর্বস্বত্ব সংরক্ষিত।</p>
-          <p className="text-xs mt-1">একটি ডেমো অ্যাপ্লিকেশন</p>
            
            {/* Developer Info Section */}
             <div className="mt-10 pt-8 border-t border-border/50 max-w-2xl mx-auto">
                 <h3 className="text-xl font-semibold mb-4 text-foreground">ডেভেলপার পরিচিতি</h3>
                 <div className="flex flex-col items-center gap-4">
-                    {/* Developer image removed as per request for landing page, but can be in dedicated page */}
                     <div>
                         <p className="text-xl font-bold text-foreground">মোহাম্মদ শেখ শাহিনুর রহমান</p>
                         <p className="text-sm text-muted-foreground">কবি | লেখক | সফটওয়্যার ইঞ্জিনিয়ার | প্রোগ্রামার | ডিজিটাল ফরেনসিক বিশেষজ্ঞ | প্রযুক্তি উদ্ভাবক</p>
