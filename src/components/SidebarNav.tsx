@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { LayoutDashboard, Repeat, FileText, BellRing, NotebookText, Settings2 } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Button } from '@/components/ui/button';
+import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
 const navItems = [
   { href: '/dashboard', label: 'ড্যাশবোর্ড', icon: LayoutDashboard },
@@ -20,27 +20,26 @@ export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-2 p-4">
+    <SidebarMenu className="p-2"> {/* Add padding for the menu items */}
       {navItems.map((item) => {
         const Icon = item.icon;
         const isActive = pathname === item.href || (item.href !== '/dashboard' && pathname.startsWith(item.href));
         return (
-          <Button
-            key={item.href}
-            asChild
-            variant={isActive ? 'default' : 'ghost'}
-            className={cn(
-              'w-full justify-start',
-              isActive && 'bg-primary text-primary-foreground hover:bg-primary/90 hover:text-primary-foreground'
-            )}
-          >
-            <Link href={item.href}>
-              <Icon className="mr-2 h-5 w-5" />
-              {item.label}
-            </Link>
-          </Button>
+          <SidebarMenuItem key={item.href}>
+            <SidebarMenuButton
+              asChild
+              isActive={isActive}
+              className={cn('w-full justify-start')} // Let default active styles from sidebar component apply
+              tooltip={item.label}
+            >
+              <Link href={item.href}>
+                <Icon className="mr-2" />
+                <span>{item.label}</span>
+              </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
         );
       })}
-    </nav>
+    </SidebarMenu>
   );
 }

@@ -4,6 +4,7 @@ import { AppHeader } from '@/components/AppHeader';
 import { SidebarNav } from '@/components/SidebarNav';
 import { usePinLock } from '@/contexts/PinLockContext';
 import { PinOverlay } from '@/components/PinOverlay';
+import { SidebarProvider, Sidebar, SidebarContent, SidebarInset } from '@/components/ui/sidebar';
 
 interface AppLayoutProps {
   children: ReactNode;
@@ -17,16 +18,22 @@ export function AppLayout({ children }: AppLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col">
-      <AppHeader />
-      <div className="flex flex-1">
-        <aside className="hidden md:block w-64 border-r bg-card">
-          <SidebarNav />
-        </aside>
-        <main className="flex-1 p-6 bg-background">
-          {children}
-        </main>
+    <SidebarProvider defaultOpen={true}>
+      <div className="min-h-screen flex flex-col">
+        <AppHeader />
+        <div className="flex flex-1">
+          <Sidebar>
+            <SidebarContent className="p-0"> {/* Remove default padding to allow SidebarNav to control it */}
+              <SidebarNav />
+            </SidebarContent>
+          </Sidebar>
+          <SidebarInset>
+            <div className="p-6 bg-background"> {/* Re-apply original main padding here */}
+              {children}
+            </div>
+          </SidebarInset>
+        </div>
       </div>
-    </div>
+    </SidebarProvider>
   );
 }
