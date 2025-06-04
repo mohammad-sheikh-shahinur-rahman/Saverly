@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -20,7 +21,7 @@ export function AppHeader() {
       <div className="container flex h-16 items-center justify-between">
         <Link href="/dashboard" className="flex items-center gap-2">
           <SaverlyLogo className="h-6 w-6 text-primary" />
-          <span className="font-headline text-xl font-bold">Saverly</span>
+          <span className="font-headline text-xl font-bold">সেভারলি</span>
         </Link>
         <div className="flex items-center gap-4">
           <ThemeToggle />
@@ -28,23 +29,23 @@ export function AppHeader() {
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="icon" className="rounded-full">
                 <User className="h-5 w-5" />
-                <span className="sr-only">User menu</span>
+                <span className="sr-only">ব্যবহারকারী মেনু</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
-              <DropdownMenuLabel>My Account</DropdownMenuLabel>
+              <DropdownMenuLabel>আমার অ্যাকাউন্ট</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/settings">
                   <Settings className="mr-2 h-4 w-4" />
-                  <span>Settings</span>
+                  <span>সেটিংস</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
                 <Link href="/">
                   <LogOut className="mr-2 h-4 w-4" />
-                  <span>Log out</span>
+                  <span>লগ আউট</span>
                 </Link>
               </DropdownMenuItem>
             </DropdownMenuContent>

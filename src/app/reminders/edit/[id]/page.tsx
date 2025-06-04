@@ -1,7 +1,5 @@
-"use client";
 
-// This is largely a copy of new/page.tsx for placeholder purposes.
-// In a real app, you'd fetch the reminder data by id.
+"use client";
 
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -14,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
+import { bn } from 'date-fns/locale'; // Bangla locale
 import { CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useParams } from 'next/navigation';
@@ -22,17 +21,17 @@ import * as z from 'zod';
 import { useEffect } from 'react';
 
 const reminderSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  date: z.date({ required_error: "Date is required" }),
+  title: z.string().min(1, { message: "শিরোনাম আবশ্যক" }),
+  date: z.date({ required_error: "তারিখ আবশ্যক" }),
   note: z.string().optional(),
 });
 
 type ReminderFormValues = z.infer<typeof reminderSchema>;
 
-// Mock data for editing
+// Mock data - translate this data if it's static
 const mockReminderData: { [id: string]: ReminderFormValues } = {
-  '1': { title: 'Credit Card Payment', date: new Date('2024-07-25'), note: 'Pay Visa bill' },
-  '2': { title: 'Rent Due', date: new Date('2024-08-01'), note: 'Monthly rent for August' },
+  '1': { title: 'ক্রেডিট কার্ড পেমেন্ট', date: new Date('2024-07-25'), note: 'ভিসা বিল পরিশোধ করুন' },
+  '2': { title: 'ভাড়া বাকি', date: new Date('2024-08-01'), note: 'আগস্ট মাসের মাসিক ভাড়া' },
 };
 
 export default function EditReminderPage() {
@@ -55,7 +54,7 @@ export default function EditReminderPage() {
   }, [reminderId, form]);
 
   function onSubmit(values: ReminderFormValues) {
-    console.log("Updated reminder:", values);
+    console.log("আপডেট করা রিমাইন্ডার:", values);
     router.push('/reminders');
   }
   
@@ -65,11 +64,11 @@ export default function EditReminderPage() {
             <div className="max-w-2xl mx-auto">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Loading reminder...</CardTitle>
+                        <CardTitle>রিমাইন্ডার লোড হচ্ছে...</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>If this takes too long, the reminder might not exist.</p>
-                        <Button variant="link" asChild><Link href="/reminders">Back to reminders</Link></Button>
+                        <p>যদি এটি খুব বেশি সময় নেয়, রিমাইন্ডারটি নাও থাকতে পারে।</p>
+                        <Button variant="link" asChild><Link href="/reminders">রিমাইন্ডারে ফিরে যান</Link></Button>
                     </CardContent>
                 </Card>
             </div>
@@ -82,8 +81,8 @@ export default function EditReminderPage() {
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Edit Reminder</CardTitle>
-            <CardDescription>Update the details of your financial reminder.</CardDescription>
+            <CardTitle className="font-headline text-2xl">রিমাইন্ডার সম্পাদনা করুন</CardTitle>
+            <CardDescription>আপনার আর্থিক রিমাইন্ডারের বিবরণ আপডেট করুন।</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -93,9 +92,9 @@ export default function EditReminderPage() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>শিরোনাম</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Credit Card Bill, Rent Payment" {...field} />
+                        <Input placeholder="যেমনঃ ক্রেডিট কার্ড বিল, ভাড়ার পেমেন্ট" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -107,7 +106,7 @@ export default function EditReminderPage() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Reminder Date</FormLabel>
+                      <FormLabel>রিমাইন্ডারের তারিখ</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -119,9 +118,9 @@ export default function EditReminderPage() {
                               )}
                             >
                               {field.value ? (
-                                format(new Date(field.value), "PPP")
+                                format(new Date(field.value), "PPP", { locale: bn })
                               ) : (
-                                <span>Pick a date</span>
+                                <span>একটি তারিখ নির্বাচন করুন</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -132,6 +131,7 @@ export default function EditReminderPage() {
                             mode="single"
                             selected={field.value ? new Date(field.value) : undefined}
                             onSelect={field.onChange}
+                            locale={bn} // Pass Bangla locale
                             disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
                             initialFocus
                           />
@@ -147,9 +147,9 @@ export default function EditReminderPage() {
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Note (Optional)</FormLabel>
+                      <FormLabel>নোট (ঐচ্ছিক)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Add any relevant details for the reminder..." {...field} />
+                        <Textarea placeholder="রিমাইন্ডারের জন্য প্রাসঙ্গিক কোনো বিবরণ যোগ করুন..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -158,9 +158,9 @@ export default function EditReminderPage() {
 
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" asChild>
-                    <Link href="/reminders">Cancel</Link>
+                    <Link href="/reminders">বাতিল</Link>
                   </Button>
-                  <Button type="submit">Update Reminder</Button>
+                  <Button type="submit">আপডেট করুন</Button>
                 </div>
               </form>
             </Form>

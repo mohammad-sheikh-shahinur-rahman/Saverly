@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -19,12 +20,12 @@ import { SaverlyLogo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 
 const signupSchema = z.object({
-  name: z.string().min(2, { message: "Name must be at least 2 characters." }),
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  name: z.string().min(2, { message: "নাম কমপক্ষে ২ অক্ষরের হতে হবে।" }),
+  email: z.string().email({ message: "অবৈধ ইমেইল ঠিকানা।" }),
+  password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" }),
   confirmPassword: z.string(),
 }).refine((data) => data.password === data.confirmPassword, {
-  message: "Passwords don't match",
+  message: "পাসওয়ার্ড মেলেনি",
   path: ["confirmPassword"],
 });
 
@@ -44,7 +45,6 @@ export default function SignupPage() {
   });
 
   function onSubmit(values: SignupFormValues) {
-    // Placeholder for signup logic
     console.log(values);
     router.push('/dashboard');
   }
@@ -56,8 +56,8 @@ export default function SignupPage() {
           <div className="mx-auto mb-4">
              <SaverlyLogo className="h-16 w-16 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">Create an Account</CardTitle>
-          <CardDescription>Join Saverly to start tracking your finances.</CardDescription>
+          <CardTitle className="font-headline text-3xl">অ্যাকাউন্ট তৈরি করুন</CardTitle>
+          <CardDescription>আপনার আর্থিক ট্র্যাকিং শুরু করতে সেভারলিতে যোগ দিন।</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -67,9 +67,9 @@ export default function SignupPage() {
                 name="name"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Full Name</FormLabel>
+                    <FormLabel>পূর্ণ নাম</FormLabel>
                     <FormControl>
-                      <Input placeholder="John Doe" {...field} />
+                      <Input placeholder="যেমনঃ জন ডো" {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -80,7 +80,7 @@ export default function SignupPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>ইমেইল</FormLabel>
                     <FormControl>
                       <Input placeholder="you@example.com" {...field} />
                     </FormControl>
@@ -93,7 +93,7 @@ export default function SignupPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>পাসওয়ার্ড</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -106,7 +106,7 @@ export default function SignupPage() {
                 name="confirmPassword"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Confirm Password</FormLabel>
+                    <FormLabel>পাসওয়ার্ড নিশ্চিত করুন</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -115,15 +115,15 @@ export default function SignupPage() {
                 )}
               />
               <Button type="submit" className="w-full">
-                Sign Up
+                সাইন আপ
               </Button>
             </form>
           </Form>
           <div className="mt-6 text-center text-sm">
             <p className="text-muted-foreground">
-              Already have an account?{' '}
+              ইতিমধ্যে অ্যাকাউন্ট আছে?{' '}
               <Link href="/" className="font-medium text-primary hover:underline">
-                Sign In
+                সাইন ইন
               </Link>
             </p>
           </div>

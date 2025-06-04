@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -7,12 +8,12 @@ import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 
 const navItems = [
-  { href: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
-  { href: '/transactions', label: 'Transactions', icon: Repeat },
-  { href: '/reports', label: 'Reports', icon: FileText },
-  { href: '/reminders', label: 'Reminders', icon: BellRing },
-  { href: '/notes', label: 'Financial Notes', icon: NotebookText },
-  { href: '/settings', label: 'Settings', icon: Settings2 },
+  { href: '/dashboard', label: 'ড্যাশবোর্ড', icon: LayoutDashboard },
+  { href: '/transactions', label: 'লেনদেন', icon: Repeat },
+  { href: '/reports', label: 'রিপোর্ট', icon: FileText },
+  { href: '/reminders', label: 'রিমাইন্ডার', icon: BellRing },
+  { href: '/notes', label: 'আর্থিক নোট', icon: NotebookText },
+  { href: '/settings', label: 'সেটিংস', icon: Settings2 },
 ];
 
 export function SidebarNav() {

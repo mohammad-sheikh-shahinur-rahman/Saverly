@@ -1,7 +1,5 @@
-"use client";
 
-// This is largely a copy of new/page.tsx for placeholder purposes.
-// In a real app, you'd fetch the note data by id.
+"use client";
 
 import { AppLayout } from '@/components/AppLayout';
 import { Button } from '@/components/ui/button';
@@ -17,16 +15,16 @@ import * as z from 'zod';
 import { useEffect } from 'react';
 
 const noteSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  content: z.string().min(1, { message: "Content is required" }),
+  title: z.string().min(1, { message: "শিরোনাম আবশ্যক" }),
+  content: z.string().min(1, { message: "বিষয়বস্তু আবশ্যক" }),
 });
 
 type NoteFormValues = z.infer<typeof noteSchema>;
 
-// Mock data for editing
+// Mock data for editing - translate if static
 const mockNoteData: { [id: string]: NoteFormValues } = {
-  '1': { title: 'Investment Ideas Q3', content: 'Research tech stocks and ETFs. Consider long-term government bonds.'},
-  '2': { title: 'Savings Goals 2025', content: 'Aim for $10,000 emergency fund. Save $500/month for vacation.'},
+  '1': { title: 'বিনিয়োগের ধারণা Q3', content: 'টেক স্টক এবং ইটিএফ গবেষণা করুন। দীর্ঘমেয়াদী সরকারি বন্ড বিবেচনা করুন।'},
+  '2': { title: 'সঞ্চয়ের লক্ষ্য ২০২৫', content: '৳১০,০০০ জরুরি তহবিল লক্ষ্য করুন। অবকাশের জন্য প্রতি মাসে ৳৫০০ সঞ্চয় করুন।'},
 };
 
 export default function EditNotePage() {
@@ -45,7 +43,7 @@ export default function EditNotePage() {
   }, [noteId, form]);
 
   function onSubmit(values: NoteFormValues) {
-    console.log("Updated note:", values);
+    console.log("আপডেট করা নোট:", values);
     router.push('/notes');
   }
 
@@ -55,11 +53,11 @@ export default function EditNotePage() {
             <div className="max-w-2xl mx-auto">
                 <Card>
                     <CardHeader>
-                        <CardTitle>Loading note...</CardTitle>
+                        <CardTitle>নোট লোড হচ্ছে...</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p>If this takes too long, the note might not exist.</p>
-                         <Button variant="link" asChild><Link href="/notes">Back to notes</Link></Button>
+                        <p>যদি এটি খুব বেশি সময় নেয়, নোটটি নাও থাকতে পারে।</p>
+                         <Button variant="link" asChild><Link href="/notes">নোটে ফিরে যান</Link></Button>
                     </CardContent>
                 </Card>
             </div>
@@ -72,8 +70,8 @@ export default function EditNotePage() {
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Edit Financial Note</CardTitle>
-            <CardDescription>Update your financial ideas, plans, or important information.</CardDescription>
+            <CardTitle className="font-headline text-2xl">আর্থিক নোট সম্পাদনা করুন</CardTitle>
+            <CardDescription>আপনার আর্থিক ধারণা, পরিকল্পনা বা গুরুত্বপূর্ণ তথ্য আপডেট করুন।</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -83,9 +81,9 @@ export default function EditNotePage() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>শিরোনাম</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Investment Strategy, Savings Plan" {...field} />
+                        <Input placeholder="যেমনঃ বিনিয়োগ কৌশল, সঞ্চয় পরিকল্পনা" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -97,9 +95,9 @@ export default function EditNotePage() {
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Content</FormLabel>
+                      <FormLabel>বিষয়বস্তু</FormLabel>
                       <FormControl>
-                        <Textarea rows={8} placeholder="Write your detailed notes here..." {...field} />
+                        <Textarea rows={8} placeholder="আপনার বিস্তারিত নোট এখানে লিখুন..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -108,9 +106,9 @@ export default function EditNotePage() {
 
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" asChild>
-                    <Link href="/notes">Cancel</Link>
+                    <Link href="/notes">বাতিল</Link>
                   </Button>
-                  <Button type="submit">Update Note</Button>
+                  <Button type="submit">আপডেট করুন</Button>
                 </div>
               </form>
             </Form>

@@ -5,8 +5,8 @@ import { PinLockProvider } from '@/contexts/PinLockContext';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Saverly - Personal Finance Tracker',
-  description: 'Track your daily expenses, income, and manage your finances with Saverly.',
+  title: 'সেভারলি - ব্যক্তিগত অর্থ ট্র্যাকার',
+  description: 'সেভারলি দিয়ে আপনার দৈনন্দিন খরচ, আয় ট্র্যাক করুন এবং আপনার অর্থ পরিচালনা করুন।',
 };
 
 export default function RootLayout({
@@ -15,11 +15,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="bn" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=PT+Sans:wght@400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Bengali:wght@400;700&display=swap" rel="stylesheet" />
       </head>
       <body className="font-body antialiased">
         <ThemeProvider

@@ -22,12 +22,11 @@ interface PinDialogProps {
   open: boolean;
   mode: PinDialogMode;
   onOpenChange: (open: boolean) => void;
-  onPinSet?: (pin: string) => void; // For initial setup
-  onPinChanged?: (newPin: string) => void; // For changing PIN
-  currentPinToVerify?: string; // Only for 'changeCurrent' mode
+  onPinSet?: (pin: string) => void;
+  onPinChanged?: (newPin: string) => void;
 }
 
-const PIN_LENGTH = 4; // Or 6, as preferred
+const PIN_LENGTH = 4;
 
 export function PinDialog({
   open,
@@ -52,7 +51,7 @@ export function PinDialog({
   }, [open, initialMode]);
 
   const handlePinInputChange = (value: string, field: 'pin' | 'confirmPin' | 'newPin') => {
-    const numericValue = value.replace(/\D/g, ''); // Allow only digits
+    const numericValue = value.replace(/\D/g, ''); 
     if (numericValue.length <= PIN_LENGTH) {
       if (field === 'pin') setPin(numericValue);
       else if (field === 'confirmPin') setConfirmPin(numericValue);
@@ -65,63 +64,56 @@ export function PinDialog({
     setError(null);
     if (mode === 'setup') {
       if (pin.length !== PIN_LENGTH) {
-        setError(`PIN must be ${PIN_LENGTH} digits.`);
+        setError(`পিন অবশ্যই ${PIN_LENGTH} সংখ্যার হতে হবে।`);
         return;
       }
       setMode('confirmSetup');
     } else if (mode === 'confirmSetup') {
       if (pin !== confirmPin) {
-        setError('PINs do not match.');
+        setError('পিন মেলেনি।');
         return;
       }
       onPinSet?.(pin);
-      toast({ title: "PIN Set", description: "Your PIN has been successfully set." });
+      toast({ title: "পিন সেট হয়েছে", description: "আপনার পিন সফলভাবে সেট করা হয়েছে।" });
       onOpenChange(false);
-    } else if (mode === 'changeCurrent') {
-      // This mode implies external verification of current PIN via usePinLock.changePin
-      // This dialog part is for setting the new PIN after old one is verified.
-      // So, we transition directly to setting the new PIN.
-      setMode('changeNew');
     } else if (mode === 'changeNew') {
       if (newPin.length !== PIN_LENGTH) {
-        setError(`New PIN must be ${PIN_LENGTH} digits.`);
+        setError(`নতুন পিন অবশ্যই ${PIN_LENGTH} সংখ্যার হতে হবে।`);
         return;
       }
-      setConfirmPin(''); // Clear confirm for new pin entry
+      setConfirmPin(''); 
       setMode('confirmNew');
     } else if (mode === 'confirmNew') {
       if (newPin !== confirmPin) {
-        setError('New PINs do not match.');
+        setError('নতুন পিন মেলেনি।');
         return;
       }
-      onPinChanged?.(newPin); // This callback should internally handle verification of old PIN if needed
-      toast({ title: "PIN Changed", description: "Your PIN has been successfully changed." });
+      onPinChanged?.(newPin); 
+      toast({ title: "পিন পরিবর্তিত হয়েছে", description: "আপনার পিন সফলভাবে পরিবর্তিত হয়েছে।" });
       onOpenChange(false);
     }
   };
   
   const getTitle = () => {
-    if (mode === 'setup') return "Set Up PIN";
-    if (mode === 'confirmSetup') return "Confirm Your PIN";
-    if (mode === 'changeCurrent') return "Enter Current PIN"; // This state is mostly handled by settings page logic
-    if (mode === 'changeNew') return "Set New PIN";
-    if (mode === 'confirmNew') return "Confirm New PIN";
-    return "PIN Dialog";
+    if (mode === 'setup') return "পিন সেট আপ করুন";
+    if (mode === 'confirmSetup') return "আপনার পিন নিশ্চিত করুন";
+    if (mode === 'changeNew') return "নতুন পিন সেট করুন";
+    if (mode === 'confirmNew') return "নতুন পিন নিশ্চিত করুন";
+    return "পিন ডায়ালগ";
   }
 
   const getDescription = () => {
-     if (mode === 'setup') return `Create a ${PIN_LENGTH}-digit PIN for your app.`;
-     if (mode === 'confirmSetup') return "Please re-enter your PIN to confirm.";
-     if (mode === 'changeCurrent') return `Enter your current ${PIN_LENGTH}-digit PIN.`;
-     if (mode === 'changeNew') return `Enter your new ${PIN_LENGTH}-digit PIN.`;
-     if (mode === 'confirmNew') return "Please re-enter your new PIN to confirm.";
+     if (mode === 'setup') return `আপনার অ্যাপের জন্য একটি ${PIN_LENGTH}-সংখ্যার পিন তৈরি করুন।`;
+     if (mode === 'confirmSetup') return "নিশ্চিত করতে অনুগ্রহ করে আপনার পিন পুনরায় লিখুন।";
+     if (mode === 'changeNew') return `আপনার নতুন ${PIN_LENGTH}-সংখ্যার পিন লিখুন।`;
+     if (mode === 'confirmNew') return "নিশ্চিত করতে অনুগ্রহ করে আপনার নতুন পিন পুনরায় লিখুন।";
      return "";
   }
 
   return (
     <Dialog open={open} onOpenChange={(isOpen) => {
       if (!isOpen) {
-        setMode(initialMode); // Reset mode if dialog is closed externally
+        setMode(initialMode); 
         setPin('');
         setConfirmPin('');
         setNewPin('');
@@ -139,7 +131,7 @@ export function PinDialog({
           
           {(mode === 'setup') && (
             <div className="space-y-1">
-              <Label htmlFor="pin">Enter PIN</Label>
+              <Label htmlFor="pin">পিন লিখুন</Label>
               <Input
                 id="pin"
                 type="password"
@@ -153,7 +145,7 @@ export function PinDialog({
 
           {(mode === 'confirmSetup' || mode === 'confirmNew') && (
             <div className="space-y-1">
-              <Label htmlFor="confirmPin">{mode === 'confirmSetup' ? 'Confirm PIN' : 'Confirm New PIN'}</Label>
+              <Label htmlFor="confirmPin">{mode === 'confirmSetup' ? 'পিন নিশ্চিত করুন' : 'নতুন পিন নিশ্চিত করুন'}</Label>
               <Input
                 id="confirmPin"
                 type="password"
@@ -162,14 +154,14 @@ export function PinDialog({
                 onChange={(e) => handlePinInputChange(e.target.value, 'confirmPin')}
                 className="text-center tracking-[0.5em]"
               />
-               {mode === 'confirmSetup' && <p className="text-xs text-muted-foreground text-center">You entered: {pin.split('').map(() => '*').join('')}</p>}
-               {mode === 'confirmNew' && <p className="text-xs text-muted-foreground text-center">New PIN: {newPin.split('').map(() => '*').join('')}</p>}
+               {mode === 'confirmSetup' && <p className="text-xs text-muted-foreground text-center">আপনি লিখেছেন: {pin.split('').map(() => '•').join('')}</p>}
+               {mode === 'confirmNew' && <p className="text-xs text-muted-foreground text-center">নতুন পিন: {newPin.split('').map(() => '•').join('')}</p>}
             </div>
           )}
 
           {(mode === 'changeNew') && (
              <div className="space-y-1">
-              <Label htmlFor="newPin">Enter New PIN</Label>
+              <Label htmlFor="newPin">নতুন পিন লিখুন</Label>
               <Input
                 id="newPin"
                 type="password"
@@ -185,14 +177,14 @@ export function PinDialog({
         <DialogFooter className="sm:justify-between gap-2">
           <DialogClose asChild>
             <Button type="button" variant="outline">
-              Cancel
+              বাতিল
             </Button>
           </DialogClose>
           <Button type="button" onClick={handleSubmit}>
-            {mode === 'setup' && 'Next'}
-            {mode === 'confirmSetup' && 'Set PIN'}
-            {mode === 'changeNew' && 'Next'}
-            {mode === 'confirmNew' && 'Change PIN'}
+            {mode === 'setup' && 'পরবর্তী'}
+            {(mode === 'confirmSetup') && 'পিন সেট করুন'}
+            {mode === 'changeNew' && 'পরবর্তী'}
+            {(mode === 'confirmNew') && 'পিন পরিবর্তন করুন'}
           </Button>
         </DialogFooter>
       </DialogContent>

@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLayout } from '@/components/AppLayout';
@@ -8,10 +9,11 @@ import { PlusCircle, Edit, Trash2, BellRing } from 'lucide-react';
 import Link from 'next/link';
 import { useState } from 'react';
 
+// Mock data needs to be translated if displayed directly.
 const mockReminders = [
-  { id: '1', title: 'Credit Card Payment', date: '2024-07-25', note: 'Pay Visa bill' },
-  { id: '2', title: 'Rent Due', date: '2024-08-01', note: 'Monthly rent for August' },
-  { id: '3', title: 'Subscription Renewal', date: '2024-08-10', note: 'Netflix subscription' },
+  { id: '1', title: 'ক্রেডিট কার্ড পেমেন্ট', date: '২০২৪-০৭-২৫', note: 'ভিসা বিল পরিশোধ করুন' },
+  { id: '2', title: 'ভাড়া বাকি', date: '২০২৪-০৮-০১', note: 'আগস্ট মাসের মাসিক ভাড়া' },
+  { id: '3', title: 'সাবস্ক্রিপশন নবায়ন', date: '২০২৪-০৮-১০', note: 'নেটফ্লিক্স সাবস্ক্রিপশন' },
 ];
 
 export default function RemindersPage() {
@@ -19,17 +21,16 @@ export default function RemindersPage() {
 
   const handleDelete = (id: string) => {
     setReminders(reminders.filter(reminder => reminder.id !== id));
-    // Add actual delete logic here (e.g., API call)
   };
 
   return (
     <AppLayout>
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row justify-between items-center gap-4">
-          <h1 className="text-3xl font-bold font-headline">Reminders</h1>
+          <h1 className="text-3xl font-bold font-headline">রিমাইন্ডার</h1>
           <Button asChild>
             <Link href="/reminders/new">
-              <PlusCircle className="mr-2 h-5 w-5" /> Add Reminder
+              <PlusCircle className="mr-2 h-5 w-5" /> রিমাইন্ডার যোগ করুন
             </Link>
           </Button>
         </div>
@@ -38,35 +39,34 @@ export default function RemindersPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BellRing className="h-6 w-6 text-primary" />
-              Your Financial Reminders
+              আপনার আর্থিক রিমাইন্ডার
             </CardTitle>
-            <CardDescription>Stay on top of your bills and financial events.</CardDescription>
+            <CardDescription>আপনার বিল এবং আর্থিক ইভেন্টগুলির উপরে নজর রাখুন।</CardDescription>
           </CardHeader>
           <CardContent>
             {reminders.length > 0 ? (
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>Date</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead>Note</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead>তারিখ</TableHead>
+                    <TableHead>শিরোনাম</TableHead>
+                    <TableHead>নোট</TableHead>
+                    <TableHead className="text-right">ক্রিয়াকলাপ</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {reminders.map((reminder) => (
                     <TableRow key={reminder.id}>
-                      <TableCell>{reminder.date}</TableCell>
+                      <TableCell>{reminder.date}</TableCell> {/* Date formatting might need localization */}
                       <TableCell className="font-medium">{reminder.title}</TableCell>
                       <TableCell className="text-sm text-muted-foreground">{reminder.note}</TableCell>
                       <TableCell className="text-right">
                         <Button variant="ghost" size="icon" asChild>
-                           {/* Placeholder: Link to edit page */}
-                          <Link href={`/reminders/edit/${reminder.id}`}>
+                          <Link href={`/reminders/edit/${reminder.id}`} title="সম্পাদনা করুন">
                             <Edit className="h-4 w-4" />
                           </Link>
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(reminder.id)} className="text-destructive hover:text-destructive">
+                        <Button variant="ghost" size="icon" onClick={() => handleDelete(reminder.id)} className="text-destructive hover:text-destructive" title="মুছে ফেলুন">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </TableCell>
@@ -77,9 +77,9 @@ export default function RemindersPage() {
             ) : (
               <div className="p-8 border border-dashed rounded-lg text-center">
                 <BellRing className="mx-auto h-12 w-12 text-muted-foreground mb-4" />
-                <h3 className="text-lg font-semibold">No Reminders Set</h3>
+                <h3 className="text-lg font-semibold">কোনো রিমাইন্ডার সেট করা নেই</h3>
                 <p className="text-muted-foreground">
-                  Click &quot;Add Reminder&quot; to create your first financial reminder.
+                  আপনার প্রথম আর্থিক রিমাইন্ডার তৈরি করতে "রিমাইন্ডার যোগ করুন" এ ক্লিক করুন।
                 </p>
               </div>
             )}

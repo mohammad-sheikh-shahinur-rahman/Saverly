@@ -27,14 +27,13 @@ export function PinOverlay() {
     e.preventDefault();
     setError(null);
     if (pin.length !== PIN_LENGTH) {
-      setError(`PIN must be ${PIN_LENGTH} digits.`);
+      setError(`পিন অবশ্যই ${PIN_LENGTH} সংখ্যার হতে হবে।`);
       return;
     }
     if (!attemptUnlock(pin)) {
-      setError('Incorrect PIN. Please try again.');
-      setPin(''); // Clear PIN on incorrect attempt
+      setError('ভুল পিন। অনুগ্রহ করে আবার চেষ্টা করুন।');
+      setPin(''); 
     }
-    // On successful unlock, PinLockContext handles setting isAppLocked to false
   };
 
   return (
@@ -44,8 +43,8 @@ export function PinOverlay() {
           <div className="mx-auto mb-4">
             <SaverlyLogo className="h-12 w-12 text-primary" />
           </div>
-          <CardTitle className="font-headline text-2xl">Enter PIN</CardTitle>
-          <CardDescription>Please enter your {PIN_LENGTH}-digit PIN to unlock Saverly.</CardDescription>
+          <CardTitle className="font-headline text-2xl">পিন লিখুন</CardTitle>
+          <CardDescription>সেভারলি আনলক করতে অনুগ্রহ করে আপনার {PIN_LENGTH}-সংখ্যার পিন লিখুন।</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
@@ -60,7 +59,7 @@ export function PinOverlay() {
               autoFocus
             />
             <Button type="submit" className="w-full">
-              Unlock
+              আনলক
             </Button>
           </form>
         </CardContent>

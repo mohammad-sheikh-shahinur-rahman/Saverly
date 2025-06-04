@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLayout } from '@/components/AppLayout';
@@ -11,6 +12,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
+import { bn } from 'date-fns/locale'; // Bangla locale
 import { CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -18,8 +20,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const reminderSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  date: z.date({ required_error: "Date is required" }),
+  title: z.string().min(1, { message: "শিরোনাম আবশ্যক" }),
+  date: z.date({ required_error: "তারিখ আবশ্যক" }),
   note: z.string().optional(),
 });
 
@@ -31,14 +33,13 @@ export default function NewReminderPage() {
     resolver: zodResolver(reminderSchema),
     defaultValues: {
       title: '',
-      date: new Date(),
+      date: new Date(), // Default to today, will be formatted in Bangla
       note: '',
     },
   });
 
   function onSubmit(values: ReminderFormValues) {
     console.log(values);
-    // Placeholder for API call
     router.push('/reminders');
   }
 
@@ -47,8 +48,8 @@ export default function NewReminderPage() {
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Set New Reminder</CardTitle>
-            <CardDescription>Create a reminder for an upcoming bill or financial event.</CardDescription>
+            <CardTitle className="font-headline text-2xl">নতুন রিমাইন্ডার সেট করুন</CardTitle>
+            <CardDescription>আসন্ন বিল বা আর্থিক ইভেন্টের জন্য একটি রিমাইন্ডার তৈরি করুন।</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -58,9 +59,9 @@ export default function NewReminderPage() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>শিরোনাম</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Credit Card Bill, Rent Payment" {...field} />
+                        <Input placeholder="যেমনঃ ক্রেডিট কার্ড বিল, ভাড়ার পেমেন্ট" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -72,7 +73,7 @@ export default function NewReminderPage() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Reminder Date</FormLabel>
+                      <FormLabel>রিমাইন্ডারের তারিখ</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -84,9 +85,9 @@ export default function NewReminderPage() {
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, "PPP", { locale: bn })
                               ) : (
-                                <span>Pick a date</span>
+                                <span>একটি তারিখ নির্বাচন করুন</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -97,7 +98,8 @@ export default function NewReminderPage() {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
-                            disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))} // Disable past dates
+                            locale={bn} // Pass Bangla locale
+                            disabled={(date) => date < new Date(new Date().setHours(0,0,0,0))}
                             initialFocus
                           />
                         </PopoverContent>
@@ -112,9 +114,9 @@ export default function NewReminderPage() {
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Note (Optional)</FormLabel>
+                      <FormLabel>নোট (ঐচ্ছিক)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Add any relevant details for the reminder..." {...field} />
+                        <Textarea placeholder="রিমাইন্ডারের জন্য প্রাসঙ্গিক কোনো বিবরণ যোগ করুন..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -123,9 +125,9 @@ export default function NewReminderPage() {
 
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" asChild>
-                    <Link href="/reminders">Cancel</Link>
+                    <Link href="/reminders">বাতিল</Link>
                   </Button>
-                  <Button type="submit">Save Reminder</Button>
+                  <Button type="submit">সংরক্ষণ করুন</Button>
                 </div>
               </form>
             </Form>

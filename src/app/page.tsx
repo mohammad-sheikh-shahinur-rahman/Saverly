@@ -1,3 +1,4 @@
+
 "use client";
 
 import Link from 'next/link';
@@ -16,17 +17,17 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { SaverlyLogo } from '@/components/icons';
-import { useRouter } from 'next/navigation'; // Import useRouter
+import { useRouter } from 'next/navigation'; 
 
 const loginSchema = z.object({
-  email: z.string().email({ message: "Invalid email address." }),
-  password: z.string().min(6, { message: "Password must be at least 6 characters." }),
+  email: z.string().email({ message: "অবৈধ ইমেইল ঠিকানা।" }),
+  password: z.string().min(6, { message: "পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে।" }),
 });
 
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const router = useRouter(); // Initialize router
+  const router = useRouter(); 
 
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
@@ -37,9 +38,7 @@ export default function LoginPage() {
   });
 
   function onSubmit(values: LoginFormValues) {
-    // Placeholder for login logic
     console.log(values);
-    // On successful login, navigate to dashboard
     router.push('/dashboard'); 
   }
 
@@ -50,8 +49,8 @@ export default function LoginPage() {
           <div className="mx-auto mb-4">
             <SaverlyLogo className="h-16 w-16 text-primary" />
           </div>
-          <CardTitle className="font-headline text-3xl">Welcome to Saverly</CardTitle>
-          <CardDescription>Sign in to manage your finances.</CardDescription>
+          <CardTitle className="font-headline text-3xl">সেভারলিতে স্বাগতম</CardTitle>
+          <CardDescription>আপনার আর্থিক ব্যবস্থাপনার জন্য সাইন ইন করুন।</CardDescription>
         </CardHeader>
         <CardContent>
           <Form {...form}>
@@ -61,7 +60,7 @@ export default function LoginPage() {
                 name="email"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Email</FormLabel>
+                    <FormLabel>ইমেইল</FormLabel>
                     <FormControl>
                       <Input placeholder="you@example.com" {...field} />
                     </FormControl>
@@ -74,7 +73,7 @@ export default function LoginPage() {
                 name="password"
                 render={({ field }) => (
                   <FormItem>
-                    <FormLabel>Password</FormLabel>
+                    <FormLabel>পাসওয়ার্ড</FormLabel>
                     <FormControl>
                       <Input type="password" placeholder="••••••••" {...field} />
                     </FormControl>
@@ -83,21 +82,21 @@ export default function LoginPage() {
                 )}
               />
               <Button type="submit" className="w-full">
-                Sign In
+                সাইন ইন
               </Button>
             </form>
           </Form>
           <div className="mt-6 text-center text-sm">
             <p className="text-muted-foreground">
-              Don&apos;t have an account?{' '}
+              অ্যাকাউন্ট নেই?{' '}
               <Link href="/signup" className="font-medium text-primary hover:underline">
-                Sign Up
+                সাইন আপ
               </Link>
             </p>
             <p className="mt-2 text-muted-foreground">
-              Or continue as a{' '}
+              অথবা অতিথি হিসেবে{' '}
               <Link href="/dashboard" className="font-medium text-primary hover:underline">
-                Guest
+                চালিয়ে যান
               </Link>
             </p>
           </div>

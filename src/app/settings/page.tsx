@@ -13,7 +13,7 @@ import { useState } from 'react';
 import { useToast } from "@/hooks/use-toast";
 import { usePinLock } from '@/contexts/PinLockContext';
 import { PinDialog } from '@/components/PinDialog';
-import { Input } from '@/components/ui/input'; // For current PIN input
+import { Input } from '@/components/ui/input';
 import {
   AlertDialog,
   AlertDialogAction,
@@ -23,7 +23,6 @@ import {
   AlertDialogFooter,
   AlertDialogHeader,
   AlertDialogTitle,
-  AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
 
@@ -31,8 +30,8 @@ export default function SettingsPage() {
   const { toast } = useToast();
   const { isPinEnabled, enablePin, disablePin, changePin } = usePinLock();
 
-  const [selectedCurrency, setSelectedCurrency] = useState('usd');
-  const [selectedLanguage, setSelectedLanguage] = useState('en');
+  const [selectedCurrency, setSelectedCurrency] = useState('bdt'); // Default to BDT
+  const [selectedLanguage, setSelectedLanguage] = useState('bn'); // Default to Bangla
   const [reminderNotifications, setReminderNotifications] = useState(true);
   const [summaryNotifications, setSummaryNotifications] = useState(false);
   
@@ -49,10 +48,8 @@ export default function SettingsPage() {
       setPinDialogMode('setup');
       setIsPinDialogOpen(true);
     } else {
-      // Add a confirmation dialog before disabling PIN
-      // For now, directly disable
       disablePin();
-      toast({ title: "PIN Lock Disabled", description: "App PIN lock has been turned off." });
+      toast({ title: "পিন লক অক্ষম", description: "অ্যাপ পিন লক বন্ধ করা হয়েছে।" });
     }
   };
 
@@ -69,56 +66,37 @@ export default function SettingsPage() {
 
   const handleVerifyCurrentPinAndProceed = async () => {
     setChangePinError(null);
-    const success = await changePin(currentPinForChange, 'dummy_new_pin_placeholder'); // Test with current PIN first
-    
-    // The changePin in context doesn't really verify oldPin if newPin is a placeholder.
-    // We need a way to verify oldPin separately or enhance changePin.
-    // For this UI demo, let's assume changePin *could* verify oldPin.
-    // A better approach: context.verifyPin(currentPinForChange)
-    // if successful, then open new pin dialog.
-    // For simplicity now, we'll use a mock verification step or directly go to new PIN setup.
-
-    // This mock assumes if `currentPinForChange` were correct, we'd proceed.
-    // In a real scenario, `changePin` would take (oldPin, newPin) and the context would handle it.
-    // Let's simulate that `changePin` needs the old PIN *before* setting the new one.
-    // The PinDialog for 'changeNew' will collect the new PIN.
-    // We need to pass the verified old PIN or a token to the next step if it were real.
-
-    const pinFromStorage = localStorage.getItem('app_pin'); // Mock verification
+    const pinFromStorage = localStorage.getItem('app_pin'); 
     if (pinFromStorage === currentPinForChange) {
-        setIsChangePinDialogOpen(false); // Close current PIN dialog
-        setPinDialogMode('changeNew');     // Set mode for PinDialog
-        setIsPinDialogOpen(true);        // Open PinDialog to set new PIN
+        setIsChangePinDialogOpen(false); 
+        setPinDialogMode('changeNew');    
+        setIsPinDialogOpen(true);       
     } else {
-        setChangePinError("Incorrect current PIN. Please try again.");
+        setChangePinError("বর্তমান পিনটি ভুল। অনুগ্রহ করে আবার চেষ্টা করুন।");
     }
   };
   
   const handleActualPinChange = (newPin: string) => {
-    // The old PIN was 'verified' (mocked) in handleVerifyCurrentPinAndProceed
-    // Now, we just call enablePin which effectively sets/updates the PIN.
-    // In a real system with `changePin(old, new)`, this would be different.
-    enablePin(newPin); // Effectively overwrites the old PIN in this mocked setup
-    // Toast is shown in PinDialog for new PIN set
+    enablePin(newPin); 
   };
 
 
   return (
     <AppLayout>
       <div className="space-y-6 max-w-3xl mx-auto">
-        <h1 className="text-3xl font-bold font-headline">Settings</h1>
+        <h1 className="text-3xl font-bold font-headline">সেটিংস</h1>
 
         <Card className="shadow-lg">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Palette className="h-6 w-6 text-primary" />
-              Appearance
+              অ্যাপের চেহারা
             </CardTitle>
-            <CardDescription>Customize the look and feel of the application.</CardDescription>
+            <CardDescription>অ্যাপ্লিকেশনের চেহারা ও অনুভূতি কাস্টমাইজ করুন।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="theme-toggle" className="text-base">Theme</Label>
+              <Label htmlFor="theme-toggle" className="text-base">থিম</Label>
               <ThemeToggle />
             </div>
           </CardContent>
@@ -128,37 +106,38 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <DollarSign className="h-6 w-6 text-primary" />
-              Financial Preferences
+              আর্থিক পছন্দসমূহ
             </CardTitle>
-             <CardDescription>Manage your currency and financial display settings.</CardDescription>
+             <CardDescription>আপনার মুদ্রা এবং আর্থিক প্রদর্শন সেটিংস পরিচালনা করুন।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-              <Label htmlFor="currency-selector" className="text-base">Currency</Label>
+              <Label htmlFor="currency-selector" className="text-base">মুদ্রা</Label>
               <Select 
                 value={selectedCurrency} 
                 onValueChange={(value) => {
                   setSelectedCurrency(value);
-                  toast({ title: "Currency Updated", description: `Currency set to ${value.toUpperCase()}. (Preference not saved yet)` });
+                  const currencyMap: {[key:string]: string} = {"usd": "USD ($)", "eur": "EUR (€)", "gbp": "GBP (£)", "inr": "INR (₹)", "bdt": "BDT (৳)"};
+                  toast({ title: "মুদ্রা আপডেট করা হয়েছে", description: `মুদ্রা ${currencyMap[value]}-তে সেট করা হয়েছে। (পছন্দ এখনও সংরক্ষিত হয়নি)` });
                 }}
               >
                 <SelectTrigger id="currency-selector" className="w-[180px]">
-                  <SelectValue placeholder="Select currency" />
+                  <SelectValue placeholder="মুদ্রা নির্বাচন করুন" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="bdt">BDT (৳)</SelectItem>
                   <SelectItem value="usd">USD ($)</SelectItem>
                   <SelectItem value="eur">EUR (€)</SelectItem>
                   <SelectItem value="gbp">GBP (£)</SelectItem>
                   <SelectItem value="inr">INR (₹)</SelectItem>
-                  <SelectItem value="bdt">BDT (৳)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
              <div className="p-6 border border-dashed rounded-lg text-center bg-muted/20">
                 <DollarSign className="mx-auto h-10 w-10 text-muted-foreground mb-3" />
-                <h4 className="text-md font-semibold">More financial settings coming soon!</h4>
+                <h4 className="text-md font-semibold">আরও আর্থিক সেটিংস শীঘ্রই আসছে!</h4>
                 <p className="text-sm text-muted-foreground">
-                  Such as default account, fiscal year start, etc.
+                  যেমন ডিফল্ট অ্যাকাউন্ট, অর্থবছর শুরু ইত্যাদি।
                 </p>
               </div>
           </CardContent>
@@ -168,27 +147,27 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Globe className="h-6 w-6 text-primary" />
-                Language & Region
+                ভাষা ও অঞ্চল
             </CardTitle>
-            <CardDescription>Set your preferred language and regional formats.</CardDescription>
+            <CardDescription>আপনার পছন্দের ভাষা এবং আঞ্চলিক ফরম্যাট সেট করুন।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
              <div className="flex items-center justify-between">
-              <Label htmlFor="language-selector" className="text-base">Language</Label>
+              <Label htmlFor="language-selector" className="text-base">ভাষা</Label>
               <Select 
                 value={selectedLanguage}
                 onValueChange={(value) => {
                   setSelectedLanguage(value);
-                  toast({ title: "Language Updated", description: `Language set to ${value === 'en' ? 'English' : 'Bangla'}. (UI translation and preference saving not yet implemented)` });
+                  toast({ title: "ভাষা আপডেট করা হয়েছে", description: `ভাষা ${value === 'bn' ? 'বাংলা' : 'English'}-তে সেট করা হয়েছে। (UI অনুবাদ এবং পছন্দ সংরক্ষণ এখনও প্রয়োগ করা হয়নি)` });
                 }}
               >
                 <SelectTrigger id="language-selector" className="w-[180px]">
-                  <SelectValue placeholder="Select language" />
+                  <SelectValue placeholder="ভাষা নির্বাচন করুন" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectItem value="bn">বাংলা</SelectItem>
                   <SelectItem value="en">English</SelectItem>
-                  <SelectItem value="bn">Bangla</SelectItem>
-                  <SelectItem value="es" disabled>Español (Coming Soon)</SelectItem>
+                  <SelectItem value="es" disabled>Español (শীঘ্রই আসছে)</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -199,30 +178,30 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Bell className="h-6 w-6 text-primary" />
-                Notifications
+                বিজ্ঞপ্তি
             </CardTitle>
-            <CardDescription>Manage your notification preferences.</CardDescription>
+            <CardDescription>আপনার বিজ্ঞপ্তি পছন্দগুলি পরিচালনা করুন।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-                <Label htmlFor="reminder-notifications" className="text-base">Reminder Notifications</Label>
+                <Label htmlFor="reminder-notifications" className="text-base">রিমাইন্ডার বিজ্ঞপ্তি</Label>
                 <Switch 
                   id="reminder-notifications" 
                   checked={reminderNotifications}
                   onCheckedChange={(checked) => {
                     setReminderNotifications(checked);
-                    toast({ title: "Notification Settings Updated", description: `Reminder notifications ${checked ? 'enabled' : 'disabled'}. (Preference not saved yet)` });
+                    toast({ title: "বিজ্ঞপ্তি সেটিংস আপডেট করা হয়েছে", description: `রিমাইন্ডার বিজ্ঞপ্তি ${checked ? 'সক্ষম' : 'অক্ষম'} করা হয়েছে। (পছন্দ এখনও সংরক্ষিত হয়নি)` });
                   }}
                 />
             </div>
             <div className="flex items-center justify-between">
-                <Label htmlFor="summary-notifications" className="text-base">Weekly Summary</Label>
+                <Label htmlFor="summary-notifications" className="text-base">সাপ্তাহিক সারাংশ</Label>
                 <Switch 
                   id="summary-notifications" 
                   checked={summaryNotifications}
                   onCheckedChange={(checked) => {
                     setSummaryNotifications(checked);
-                    toast({ title: "Notification Settings Updated", description: `Weekly summary ${checked ? 'enabled' : 'disabled'}. (Preference not saved yet)` });
+                    toast({ title: "বিজ্ঞপ্তি সেটিংস আপডেট করা হয়েছে", description: `সাপ্তাহিক সারাংশ ${checked ? 'সক্ষম' : 'অক্ষম'} করা হয়েছে। (পছন্দ এখনও সংরক্ষিত হয়নি)` });
                   }}
                 />
             </div>
@@ -233,13 +212,13 @@ export default function SettingsPage() {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
                 <Fingerprint className="h-6 w-6 text-primary" />
-                Security
+                নিরাপত্তা
             </CardTitle>
-            <CardDescription>Enhance your app security. PIN is stored in localStorage for demo purposes and is not secure for production.</CardDescription>
+            <CardDescription>আপনার অ্যাপের নিরাপত্তা বৃদ্ধি করুন। পিন ডেমো উদ্দেশ্যে localStorage-এ সংরক্ষণ করা হয় এবং প্রোডাকশনের জন্য নিরাপদ নয়।</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex items-center justify-between">
-                <Label htmlFor="pin-lock" className="text-base">Enable PIN Lock</Label>
+                <Label htmlFor="pin-lock" className="text-base">পিন লক সক্ষম করুন</Label>
                 <Switch 
                   id="pin-lock" 
                   checked={isPinEnabled}
@@ -251,10 +230,10 @@ export default function SettingsPage() {
               disabled={!isPinEnabled}
               onClick={handleChangePinRequest}
             >
-              Change PIN
+              পিন পরিবর্তন করুন
             </Button>
             <p className="text-sm text-muted-foreground">
-                Biometric authentication (Fingerprint/Face ID) is typically handled by your device/browser and not directly configurable here for web apps.
+                বায়োমেট্রিক প্রমাণীকরণ (ফিঙ্গারপ্রিন্ট/ফেস আইডি) সাধারণত আপনার ডিভাইস/ব্রাউজার দ্বারা পরিচালিত হয় এবং ওয়েব অ্যাপের জন্য এখানে সরাসরি কনফিগার করা যায় না।
             </p>
           </CardContent>
         </Card>
@@ -271,14 +250,14 @@ export default function SettingsPage() {
       <AlertDialog open={isChangePinDialogOpen} onOpenChange={setIsChangePinDialogOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Change PIN</AlertDialogTitle>
+            <AlertDialogTitle>পিন পরিবর্তন করুন</AlertDialogTitle>
             <AlertDialogDescription>
-              To change your PIN, please enter your current PIN first.
+              আপনার পিন পরিবর্তন করতে, প্রথমে আপনার বর্তমান পিন প্রবেশ করান।
             </AlertDialogDescription>
           </AlertDialogHeader>
           <div className="space-y-2 py-2">
             {changePinError && <p className="text-sm text-destructive">{changePinError}</p>}
-            <Label htmlFor="current-pin-change">Current PIN</Label>
+            <Label htmlFor="current-pin-change">বর্তমান পিন</Label>
             <Input
               id="current-pin-change"
               type="password"
@@ -289,8 +268,8 @@ export default function SettingsPage() {
             />
           </div>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setCurrentPinForChange('')}>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={handleVerifyCurrentPinAndProceed}>Verify & Proceed</AlertDialogAction>
+            <AlertDialogCancel onClick={() => setCurrentPinForChange('')}>বাতিল</AlertDialogCancel>
+            <AlertDialogAction onClick={handleVerifyCurrentPinAndProceed}>যাচাই করুন ও এগিয়ে যান</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

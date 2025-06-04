@@ -10,6 +10,8 @@ interface SummaryCardProps {
   description?: string;
 }
 
+// No direct text here to translate, text comes from props.
+// Ensure props passed to this component are translated.
 export function SummaryCard({ title, value, icon: Icon, colorClassName, description }: SummaryCardProps) {
   return (
     <Card className="shadow-lg">

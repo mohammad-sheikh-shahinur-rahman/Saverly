@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLayout } from '@/components/AppLayout';
@@ -12,31 +13,33 @@ import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { format } from 'date-fns';
-import { CalendarIcon, Check, ChevronsUpDown } from 'lucide-react';
+import { bn } from 'date-fns/locale'; // Bangla locale for date-fns
+import { CalendarIcon } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const transactionSchema = z.object({
-  type: z.enum(['income', 'expense'], { required_error: "Type is required" }),
-  title: z.string().min(1, { message: "Title is required" }),
-  amount: z.coerce.number().positive({ message: "Amount must be positive" }),
-  category: z.string().min(1, { message: "Category is required" }),
-  date: z.date({ required_error: "Date is required" }),
+  type: z.enum(['income', 'expense'], { required_error: "প্রকার আবশ্যক" }),
+  title: z.string().min(1, { message: "শিরোনাম আবশ্যক" }),
+  amount: z.coerce.number().positive({ message: "পরিমাণ ধনাত্মক হতে হবে" }),
+  category: z.string().min(1, { message: "বিভাগ আবশ্যক" }),
+  date: z.date({ required_error: "তারিখ আবশ্যক" }),
   note: z.string().optional(),
 });
 
 type TransactionFormValues = z.infer<typeof transactionSchema>;
 
+// Ensure categories are translated or use i18n keys
 const categories = [
-  { value: 'Work', label: 'Work' },
-  { value: 'Food', label: 'Food' },
-  { value: 'Housing', label: 'Housing' },
-  { value: 'Transport', label: 'Transport' },
-  { value: 'Entertainment', label: 'Entertainment' },
-  { value: 'Health', label: 'Health' },
-  { value: 'Other', label: 'Other' },
+  { value: 'Work', label: 'কাজ' },
+  { value: 'Food', label: 'খাবার' },
+  { value: 'Housing', label: 'আবাসন' },
+  { value: 'Transport', label: 'পরিবহন' },
+  { value: 'Entertainment', label: 'বিনোদন' },
+  { value: 'Health', label: 'স্বাস্থ্য' },
+  { value: 'Other', label: 'অন্যান্য' },
 ];
 
 export default function NewTransactionPage() {
@@ -58,7 +61,6 @@ export default function NewTransactionPage() {
 
   function onSubmit(values: TransactionFormValues) {
     console.log(values);
-    // Placeholder for API call
     router.push('/transactions');
   }
 
@@ -67,8 +69,8 @@ export default function NewTransactionPage() {
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Add New Transaction</CardTitle>
-            <CardDescription>Fill in the details of your income or expense.</CardDescription>
+            <CardTitle className="font-headline text-2xl">নতুন লেনদেন যোগ করুন</CardTitle>
+            <CardDescription>আপনার আয় বা ব্যয়ের বিবরণ পূরণ করুন।</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -78,16 +80,16 @@ export default function NewTransactionPage() {
                   name="type"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Type</FormLabel>
+                      <FormLabel>প্রকার</FormLabel>
                       <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select transaction type" />
+                            <SelectValue placeholder="লেনদেনের প্রকার নির্বাচন করুন" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
-                          <SelectItem value="income">Income</SelectItem>
-                          <SelectItem value="expense">Expense</SelectItem>
+                          <SelectItem value="income">আয়</SelectItem>
+                          <SelectItem value="expense">ব্যয়</SelectItem>
                         </SelectContent>
                       </Select>
                       <FormMessage />
@@ -100,9 +102,9 @@ export default function NewTransactionPage() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>শিরোনাম</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Salary, Groceries" {...field} />
+                        <Input placeholder="যেমনঃ বেতন, মুদি বাজার" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -114,7 +116,7 @@ export default function NewTransactionPage() {
                   name="amount"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Amount</FormLabel>
+                      <FormLabel>পরিমাণ (৳)</FormLabel>
                       <FormControl>
                         <Input type="number" step="0.01" placeholder="0.00" {...field} />
                       </FormControl>
@@ -128,11 +130,11 @@ export default function NewTransactionPage() {
                   name="category"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Category</FormLabel>
+                      <FormLabel>বিভাগ</FormLabel>
                        <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                           <SelectTrigger>
-                            <SelectValue placeholder="Select a category" />
+                            <SelectValue placeholder="একটি বিভাগ নির্বাচন করুন" />
                           </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -153,7 +155,7 @@ export default function NewTransactionPage() {
                   name="date"
                   render={({ field }) => (
                     <FormItem className="flex flex-col">
-                      <FormLabel>Date</FormLabel>
+                      <FormLabel>তারিখ</FormLabel>
                       <Popover>
                         <PopoverTrigger asChild>
                           <FormControl>
@@ -165,9 +167,9 @@ export default function NewTransactionPage() {
                               )}
                             >
                               {field.value ? (
-                                format(field.value, "PPP")
+                                format(field.value, "PPP", { locale: bn })
                               ) : (
-                                <span>Pick a date</span>
+                                <span>একটি তারিখ নির্বাচন করুন</span>
                               )}
                               <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
                             </Button>
@@ -178,6 +180,7 @@ export default function NewTransactionPage() {
                             mode="single"
                             selected={field.value}
                             onSelect={field.onChange}
+                            locale={bn} // Pass Bangla locale
                             disabled={(date) =>
                               date > new Date() || date < new Date("1900-01-01")
                             }
@@ -195,9 +198,9 @@ export default function NewTransactionPage() {
                   name="note"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Note (Optional)</FormLabel>
+                      <FormLabel>নোট (ঐচ্ছিক)</FormLabel>
                       <FormControl>
-                        <Textarea placeholder="Add any relevant notes..." {...field} />
+                        <Textarea placeholder="প্রাসঙ্গিক কোনো নোট যোগ করুন..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -206,9 +209,9 @@ export default function NewTransactionPage() {
 
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" asChild>
-                    <Link href="/transactions">Cancel</Link>
+                    <Link href="/transactions">বাতিল</Link>
                   </Button>
-                  <Button type="submit">Save Transaction</Button>
+                  <Button type="submit">সংরক্ষণ করুন</Button>
                 </div>
               </form>
             </Form>

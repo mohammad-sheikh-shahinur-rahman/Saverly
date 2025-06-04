@@ -1,3 +1,4 @@
+
 "use client";
 
 import { AppLayout } from '@/components/AppLayout';
@@ -13,8 +14,8 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 const noteSchema = z.object({
-  title: z.string().min(1, { message: "Title is required" }),
-  content: z.string().min(1, { message: "Content is required" }),
+  title: z.string().min(1, { message: "শিরোনাম আবশ্যক" }),
+  content: z.string().min(1, { message: "বিষয়বস্তু আবশ্যক" }),
 });
 
 type NoteFormValues = z.infer<typeof noteSchema>;
@@ -31,7 +32,6 @@ export default function NewNotePage() {
 
   function onSubmit(values: NoteFormValues) {
     console.log(values);
-    // Placeholder for API call
     router.push('/notes');
   }
 
@@ -40,8 +40,8 @@ export default function NewNotePage() {
       <div className="max-w-2xl mx-auto">
         <Card className="shadow-xl">
           <CardHeader>
-            <CardTitle className="font-headline text-2xl">Create New Financial Note</CardTitle>
-            <CardDescription>Jot down your financial ideas, plans, or important information.</CardDescription>
+            <CardTitle className="font-headline text-2xl">নতুন আর্থিক নোট তৈরি করুন</CardTitle>
+            <CardDescription>আপনার আর্থিক ধারণা, পরিকল্পনা বা গুরুত্বপূর্ণ তথ্য লিখে রাখুন।</CardDescription>
           </CardHeader>
           <CardContent>
             <Form {...form}>
@@ -51,9 +51,9 @@ export default function NewNotePage() {
                   name="title"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Title</FormLabel>
+                      <FormLabel>শিরোনাম</FormLabel>
                       <FormControl>
-                        <Input placeholder="e.g., Investment Strategy, Savings Plan" {...field} />
+                        <Input placeholder="যেমনঃ বিনিয়োগ কৌশল, সঞ্চয় পরিকল্পনা" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -65,9 +65,9 @@ export default function NewNotePage() {
                   name="content"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Content</FormLabel>
+                      <FormLabel>বিষয়বস্তু</FormLabel>
                       <FormControl>
-                        <Textarea rows={8} placeholder="Write your detailed notes here..." {...field} />
+                        <Textarea rows={8} placeholder="আপনার বিস্তারিত নোট এখানে লিখুন..." {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -76,9 +76,9 @@ export default function NewNotePage() {
 
                 <div className="flex justify-end gap-2">
                   <Button type="button" variant="outline" asChild>
-                    <Link href="/notes">Cancel</Link>
+                    <Link href="/notes">বাতিল</Link>
                   </Button>
-                  <Button type="submit">Save Note</Button>
+                  <Button type="submit">সংরক্ষণ করুন</Button>
                 </div>
               </form>
             </Form>
