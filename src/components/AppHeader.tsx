@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { User, LogOut, Settings, LayoutDashboard } from 'lucide-react'; // LayoutDashboard আমদানি করা হয়েছে
+import { User, LogOut, Settings, LayoutDashboard, Home } from 'lucide-react'; // Home আমদানি করা হয়েছে
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -43,6 +43,12 @@ export function AppHeader() {
               <DropdownMenuLabel>আমার অ্যাকাউন্ট</DropdownMenuLabel>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
+                <Link href="/">
+                  <Home className="mr-2 h-4 w-4" />
+                  <span>হোমপেজ</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
                 <Link href="/dashboard">
                   <LayoutDashboard className="mr-2 h-4 w-4" />
                   <span>ড্যাশবোর্ড</span>
@@ -56,7 +62,7 @@ export function AppHeader() {
               </DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem asChild>
-                <Link href="/"> 
+                <Link href="/">
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>লগ আউট</span>
                 </Link>
