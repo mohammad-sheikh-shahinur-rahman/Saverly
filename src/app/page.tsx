@@ -101,7 +101,17 @@ export default function LandingPage() {
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
               <h2 className="text-3xl sm:text-4xl font-bold font-headline">কেন সেভারলি?</h2>
-              <p className="text-lg text-muted-foreground mt-2">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ।</p>
+              <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ। সেভারলি আপনাকে আপনার অর্থের উপর পূর্ণ নিয়ন্ত্রণ দেয়।</p>
+            </div>
+            <div className="mb-12 sm:mb-16 max-w-3xl mx-auto">
+              <Image
+                src="https://placehold.co/800x500.png"
+                alt="আর্থিক পরিকল্পনার একটি উদাহরণ"
+                width={800}
+                height={500}
+                className="rounded-lg shadow-xl object-cover"
+                data-ai-hint="financial planning chart"
+              />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {features.map((feature) => (
@@ -122,18 +132,32 @@ export default function LandingPage() {
         
         {/* Call to Action Section */}
         <section className="py-16 sm:py-24 bg-gradient-to-tr from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
-            <h2 className="text-3xl sm:text-4xl font-bold font-headline mb-6">
-              আপনার আর্থিক নিয়ন্ত্রণ নিতে প্রস্তুত?
-            </h2>
-            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
-              আজই সেভারলিতে যোগ দিন এবং একটি চাপমুক্ত আর্থিক ভবিষ্যতের দিকে প্রথম পদক্ষেপ নিন।
-            </p>
-            <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-              <Link href="/signup">
-                বিনামূল্যে সাইন আপ করুন
-              </Link>
-            </Button>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
+              <div className="lg:w-1/2 text-center lg:text-left">
+                <h2 className="text-3xl sm:text-4xl font-bold font-headline mb-6">
+                  আপনার আর্থিক নিয়ন্ত্রণ নিতে প্রস্তুত?
+                </h2>
+                <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 mb-10">
+                  আজই সেভারলিতে যোগ দিন এবং একটি চাপমুক্ত আর্থিক ভবিষ্যতের দিকে প্রথম পদক্ষেপ নিন। আমাদের সহজ এবং শক্তিশালী টুলস আপনার অর্থ ব্যবস্থাপনাকে করবে আরও কার্যকর।
+                </p>
+                <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+                  <Link href="/signup">
+                    বিনামূল্যে সাইন আপ করুন
+                  </Link>
+                </Button>
+              </div>
+              <div className="lg:w-1/2">
+                <Image
+                  src="https://placehold.co/700x450.png"
+                  alt="আর্থিক স্বাধীনতার পথে যাত্রা"
+                  width={700}
+                  height={450}
+                  className="rounded-lg shadow-2xl object-cover mx-auto"
+                  data-ai-hint="financial freedom success"
+                />
+              </div>
+            </div>
           </div>
         </section>
       </main>
