@@ -28,12 +28,18 @@ const nextConfig: NextConfig = {
   },
 };
 
-const withPWA = withPWAInit({
-  dest: 'public',
-  register: true,
-  skipWaiting: true,
-  disable: process.env.NODE_ENV === 'development',
-  // You can add more PWA options here like runtimeCaching
-});
+let finalConfig = nextConfig;
 
-export default withPWA(nextConfig);
+// Only apply PWA configuration for production builds
+if (process.env.NODE_ENV === 'production') {
+  const withPWA = withPWAInit({
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
+    // disable: process.env.NODE_ENV === 'development', // This is implicitly handled by the conditional wrapping
+    // You can add more PWA options here like runtimeCaching
+  });
+  finalConfig = withPWA(nextConfig);
+}
+
+export default finalConfig;
