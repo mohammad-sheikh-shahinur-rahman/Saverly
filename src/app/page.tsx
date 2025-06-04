@@ -89,7 +89,7 @@ export default function LandingPage() {
                 width={1200}
                 height={600}
                 className="rounded-lg shadow-2xl object-cover"
-                data-ai-hint="app mockup"
+                data-ai-hint="app dashboard"
                 priority
               />
             </div>
@@ -110,7 +110,7 @@ export default function LandingPage() {
                 width={800}
                 height={500}
                 className="rounded-lg shadow-xl object-cover"
-                data-ai-hint="ui design"
+                data-ai-hint="features overview"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
@@ -154,7 +154,7 @@ export default function LandingPage() {
                   width={700}
                   height={450}
                   className="rounded-lg shadow-2xl object-cover mx-auto"
-                  data-ai-hint="mobile app screen"
+                  data-ai-hint="app analytics"
                 />
               </div>
             </div>
@@ -172,3 +172,5 @@ export default function LandingPage() {
     </div>
   );
 }
+
+    
