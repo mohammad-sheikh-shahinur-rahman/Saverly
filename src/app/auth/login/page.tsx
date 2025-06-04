@@ -19,9 +19,8 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { SaverlyLogo } from '@/components/icons';
 import { useRouter } from 'next/navigation';
 import { Separator } from '@/components/ui/separator';
-import { Phone, Mail } from 'lucide-react'; // Assuming Mail for email, Phone for phone
+import { Phone, Mail } from 'lucide-react';
 
-// Placeholder Google icon (replace with actual SVG or library if available)
 const GoogleIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
     <path d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.9 8.2,4.73 12.19,4.73C15.29,4.73 17.1,6.7 17.1,6.7L19,4.72C19,4.72 16.56,2 12.19,2C6.42,2 2.03,6.8 2.03,12C2.03,17.05 6.16,22 12.19,22C17.6,22 21.54,18.33 21.54,12.81C21.54,11.45 21.35,11.1 21.35,11.1Z"/>
@@ -62,10 +61,8 @@ export default function LoginPage() {
   };
 
   const handlePhoneSignIn = () => {
-    console.log("Attempting Phone Sign In...");
-    // Firebase Phone Sign In logic would go here
-    // router.push('/auth/phone-verify'); // Example: redirect to phone verification page
-    alert("ফোন নম্বর দিয়ে লগইন করার সুবিধা শীঘ্রই আসছে।");
+    console.log("Navigating to Phone Sign In page...");
+    router.push('/auth/phone-signin'); 
   };
 
 
