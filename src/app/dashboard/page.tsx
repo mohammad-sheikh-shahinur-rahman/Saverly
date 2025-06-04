@@ -5,21 +5,31 @@ import { AppLayout } from '@/components/AppLayout';
 import { SummaryCard } from '@/components/dashboard/SummaryCard';
 import { ExpensesBarChart } from '@/components/dashboard/ExpensesBarChart';
 import { CategoryPieChart } from '@/components/dashboard/CategoryPieChart';
-import { TrendingUp, TrendingDown, Scale, DollarSign, Sparkles } from 'lucide-react';
+import { TrendingUp, TrendingDown, Scale, DollarSign, Sparkles, SendHorizonal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import React, { useState } from 'react';
-import { getFinancialAdvice, type FinancialAdviceInput, type FinancialAdviceOutput } from '@/ai/flows/financial-advisor-flow';
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
+import { Input as UiInput } from "@/components/ui/input"; // Renamed to avoid conflict with Genkit's z.input
+import { ScrollArea } from "@/components/ui/scroll-area";
+import React, { useState, useRef, useEffect } from 'react';
+import { getFinancialChatResponse, type ChatInput, type ChatResponse } from '@/ai/flows/financial-advisor-flow'; // Updated import
+import type { FinancialAdviceInput } from '@/ai/flows/financial-advisor-flow'; // Keep for transaction type
+
+interface ChatMessage {
+  role: 'user' | 'ai';
+  text: string;
+}
 
 export default function DashboardPage() {
   const totalIncome = "৳৫,২৩০.০০";
   const totalExpenses = "৳২,১৫০.০০";
   const balance = "৳৩,০৮০.০০";
 
-  const [aiAdvice, setAiAdvice] = useState<string | null>(null);
-  const [isLoadingAdvice, setIsLoadingAdvice] = useState(false);
-  const [adviceError, setAdviceError] = useState<string | null>(null);
+  const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
+  const [currentUserMessage, setCurrentUserMessage] = useState('');
+  const [isLoadingResponse, setIsLoadingResponse] = useState(false);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   const recentTransactionsForAI: FinancialAdviceInput['transactions'] = [
       { title: "বেতন", type: "income", amount: 2500.00, category: "কাজ" },
@@ -27,23 +37,43 @@ export default function DashboardPage() {
       { title: "ভাড়া", type: "expense", amount: 800.00, category: "আবাসন" },
   ];
 
-  const handleGetAIAdvice = async () => {
-      setIsLoadingAdvice(true);
-      setAiAdvice(null);
-      setAdviceError(null);
-      try {
-          const input: FinancialAdviceInput = {
-              transactions: recentTransactionsForAI,
-              userName: "尊用戶", // Example User, consider localization
-          };
-          const result: FinancialAdviceOutput = await getFinancialAdvice(input);
-          setAiAdvice(result.advice);
-      } catch (error) {
-          console.error("AI পরামর্শ পেতে ত্রুটি:", error);
-          setAdviceError("দুঃখিত, এই মুহূর্তে আর্থিক পরামর্শ আনতে পারছি না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।");
-      } finally {
-          setIsLoadingAdvice(false);
-      }
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+      scrollAreaRef.current.scrollTo({ top: scrollAreaRef.current.scrollHeight, behavior: 'smooth' });
+    }
+  }, [chatMessages]);
+
+  const handleSendMessage = async () => {
+    if (!currentUserMessage.trim()) return;
+
+    const newUserMessage: ChatMessage = { role: 'user', text: currentUserMessage.trim() };
+    setChatMessages(prev => [...prev, newUserMessage]);
+    setCurrentUserMessage('');
+    setIsLoadingResponse(true);
+    setChatError(null);
+
+    try {
+      const historyForAI = chatMessages.map(msg => ({
+        role: msg.role === 'user' ? 'user' : 'model',
+        content: msg.text,
+      }));
+      
+      const input: ChatInput = {
+          userQuery: newUserMessage.text,
+          transactions: recentTransactionsForAI, // Provide transaction context
+          userName: "ব্যবহারকারী", 
+          chatHistory: historyForAI,
+      };
+      const result: ChatResponse = await getFinancialChatResponse(input);
+      setChatMessages(prev => [...prev, { role: 'ai', text: result.response }]);
+    } catch (error) {
+      console.error("AI চ্যাট প্রতিক্রিয়া পেতে ত্রুটি:", error);
+      setChatError("দুঃখিত, এই মুহূর্তে AI এর সাথে সংযোগ করা যাচ্ছে না। অনুগ্রহ করে পরে আবার চেষ্টা করুন।");
+      // Optionally add the error message to chat for visibility
+      // setChatMessages(prev => [...prev, { role: 'ai', text: "একটি ত্রুটি ঘটেছে।" }]);
+    } finally {
+      setIsLoadingResponse(false);
+    }
   };
 
   return (
@@ -85,7 +115,7 @@ export default function DashboardPage() {
           <CategoryPieChart />
         </div>
         
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4"> 
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3"> 
             <Card className="shadow-lg">
                 <CardHeader>
                     <CardTitle className="font-headline text-lg">সাম্প্রতিক লেনদেন</CardTitle>
@@ -145,37 +175,58 @@ export default function DashboardPage() {
                     </Button>
                 </CardContent>
             </Card>
-             <Card className="shadow-lg">
-                <CardHeader>
-                    <CardTitle className="font-headline text-lg">দ্রুত পদক্ষেপ</CardTitle>
-                </CardHeader>
-                <CardContent className="flex flex-col gap-2">
-                    <Button className="w-full justify-start" variant="outline" asChild><Link href="/transactions/new?type=income">আয় যোগ করুন</Link></Button>
-                    <Button className="w-full justify-start" variant="outline" asChild><Link href="/transactions/new?type=expense">ব্যয় যোগ করুন</Link></Button>
-                    <Button className="w-full justify-start" variant="outline" asChild><Link href="/reminders/new">রিমাইন্ডার সেট করুন</Link></Button>
-                    <Button className="w-full justify-start" variant="outline" asChild><Link href="/reports">রিপোর্ট দেখুন</Link></Button>
-                </CardContent>
-            </Card>
-            <Card className="shadow-lg">
+            {/* AI Financial Advisor Chat Card - This replaces the old Quick Actions and AI Advisor card */}
+            <Card className="shadow-lg lg:col-span-1 flex flex-col h-[500px]"> {/* Adjusted for a single column */}
                 <CardHeader>
                     <CardTitle className="font-headline text-lg flex items-center gap-2">
                         <Sparkles className="h-5 w-5 text-primary" />
-                        AI আর্থিক উপদেষ্টা
+                        AI আর্থিক উপদেষ্টা চ্যাট
                     </CardTitle>
                 </CardHeader>
-                <CardContent className="flex flex-col gap-3 h-full">
-                    {isLoadingAdvice && <p className="text-sm text-muted-foreground">ভাবছে...</p>}
-                    {adviceError && <p className="text-sm text-destructive">{adviceError}</p>}
-                    {aiAdvice && !isLoadingAdvice && !adviceError && (
-                        <p className="text-sm text-foreground bg-accent/10 p-3 rounded-md flex-grow">{aiAdvice}</p>
-                    )}
-                    {!aiAdvice && !isLoadingAdvice && !adviceError && (
-                         <p className="text-sm text-muted-foreground flex-grow">আপনার সাম্প্রতিক কার্যকলাপের উপর ভিত্তি করে ব্যক্তিগতকৃত আর্থিক অন্তর্দৃষ্টি পেতে নীচের বোতামে ক্লিক করুন।</p>
-                    )}
-                    <Button onClick={handleGetAIAdvice} disabled={isLoadingAdvice} className="mt-auto">
-                        {isLoadingAdvice ? 'পরামর্শ আনা হচ্ছে...' : 'AI পরামর্শ পান'}
-                    </Button>
+                <CardContent className="flex-grow overflow-hidden p-0">
+                    <ScrollArea className="h-full p-4" ref={scrollAreaRef}>
+                        <div className="space-y-4">
+                            {chatMessages.map((msg, index) => (
+                                <div key={index} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                                    <div className={`max-w-[75%] p-3 rounded-lg ${msg.role === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'}`}>
+                                        <p className="text-sm whitespace-pre-wrap">{msg.text}</p>
+                                    </div>
+                                </div>
+                            ))}
+                            {isLoadingResponse && (
+                                <div className="flex justify-start">
+                                     <div className="max-w-[75%] p-3 rounded-lg bg-muted text-muted-foreground">
+                                        <p className="text-sm">ভাবছে...</p>
+                                    </div>
+                                </div>
+                            )}
+                            {chatError && (
+                                <div className="flex justify-start">
+                                     <div className="max-w-[75%] p-3 rounded-lg bg-destructive text-destructive-foreground">
+                                        <p className="text-sm">{chatError}</p>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </ScrollArea>
                 </CardContent>
+                <CardFooter className="p-4 border-t">
+                    <div className="flex w-full items-center space-x-2">
+                        <UiInput 
+                            type="text" 
+                            placeholder="একটি বার্তা লিখুন..." 
+                            value={currentUserMessage}
+                            onChange={(e) => setCurrentUserMessage(e.target.value)}
+                            onKeyPress={(e) => e.key === 'Enter' && !isLoadingResponse && handleSendMessage()}
+                            disabled={isLoadingResponse}
+                            className="flex-grow"
+                        />
+                        <Button type="submit" size="icon" onClick={handleSendMessage} disabled={isLoadingResponse || !currentUserMessage.trim()}>
+                            <SendHorizonal className="h-5 w-5" />
+                            <span className="sr-only">বার্তা পাঠান</span>
+                        </Button>
+                    </div>
+                </CardFooter>
             </Card>
         </div>
 
