@@ -2,7 +2,7 @@
 import { AppLayout } from '@/components/AppLayout';
 import React, { Suspense } from 'react';
 import { TransactionFormClient } from './TransactionFormClient';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'; // Keep for fallback structure if complex
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 export default function NewTransactionPageContainer() {
   return (
