@@ -2,14 +2,14 @@
 import type { ReactNode } from 'react';
 import { AppHeader } from '@/components/AppHeader';
 import { SidebarNav } from '@/components/SidebarNav';
-import { PinLockProvider, usePinLock } from '@/contexts/PinLockContext';
+import { usePinLock } from '@/contexts/PinLockContext';
 import { PinOverlay } from '@/components/PinOverlay';
 
 interface AppLayoutProps {
   children: ReactNode;
 }
 
-function Layout({ children }: AppLayoutProps) {
+export function AppLayout({ children }: AppLayoutProps) {
   const { isAppLocked, isPinEnabled } = usePinLock();
 
   if (isPinEnabled && isAppLocked) {
@@ -28,13 +28,5 @@ function Layout({ children }: AppLayoutProps) {
         </main>
       </div>
     </div>
-  );
-}
-
-export function AppLayout({ children }: AppLayoutProps) {
-  return (
-    <PinLockProvider>
-      <Layout>{children}</Layout>
-    </PinLockProvider>
   );
 }

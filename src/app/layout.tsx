@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { ThemeProvider } from '@/components/ThemeProvider';
 import { Toaster } from '@/components/ui/toaster';
+import { PinLockProvider } from '@/contexts/PinLockContext';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -27,8 +28,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
-          <Toaster />
+          <PinLockProvider>
+            {children}
+            <Toaster />
+          </PinLockProvider>
         </ThemeProvider>
       </body>
     </html>
