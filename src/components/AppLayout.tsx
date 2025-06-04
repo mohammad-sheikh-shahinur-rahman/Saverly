@@ -1,3 +1,4 @@
+"use client"; // Added this line
 
 import type { ReactNode } from 'react';
 import { AppHeader } from '@/components/AppHeader';
