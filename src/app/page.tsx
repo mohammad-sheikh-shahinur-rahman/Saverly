@@ -1,9 +1,10 @@
 
+import React from 'react'; // Added this line
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SaverlyLogo } from '@/components/icons';
-import { ListChecks, BarChartBig, Sparkles, LogIn, UserPlus, BellRing, NotebookText, Info } from 'lucide-react';
-import Image from 'next/image';
+import { ListChecks, BarChartBig, Sparkles, LogIn, UserPlus, BellRing, NotebookText, Info, ArrowRight } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
 const features = [
   {
@@ -31,6 +32,11 @@ const features = [
     title: 'আর্থিক নোট সংরক্ষণ করুন',
     description: 'আপনার আর্থিক পরিকল্পনা, বাজারের বিশ্লেষণ, সঞ্চয়ের লক্ষ্য এবং অন্যান্য গুরুত্বপূর্ণ তথ্য নিরাপদে নোট করে রাখুন।',
   },
+  {
+    icon: <LogIn className="h-10 w-10 text-primary mb-4" />, // Changed icon for better visual
+    title: 'একাধিক লগইন অপশন',
+    description: 'ইমেইল, গুগল অ্যাকাউন্ট অথবা ফোন নম্বর ব্যবহার করে সহজেই সাইন ইন বা সাইন আপ করুন। আপনার পছন্দের পদ্ধতি বেছে নিন।',
+  }
 ];
 
 export default function LandingPage() {
@@ -62,7 +68,7 @@ export default function LandingPage() {
 
       {/* Hero Section */}
       <main className="flex-grow">
-        <section className="py-16 sm:py-24 bg-gradient-to-br from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
+        <section className="py-20 sm:py-28 lg:py-32 bg-gradient-to-br from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold font-headline mb-6">
               সেভারলি: আপনার <span className="text-primary">আর্থিক স্বচ্ছলতার</span> চাবিকাঠি
@@ -70,28 +76,17 @@ export default function LandingPage() {
             <p className="text-lg sm:text-xl text-muted-foreground max-w-3xl mx-auto mb-10">
               সেভারলি একটি অত্যাধুনিক ব্যক্তিগত অর্থ ব্যবস্থাপনার অ্যাপ। এর মাধ্যমে আপনি সহজেই আপনার আয়-ব্যয় ট্র্যাক করতে পারবেন, বিলের জন্য রিমাইন্ডার সেট করতে পারবেন, আর্থিক নোট সংরক্ষণ করতে পারবেন এবং AI চালিত উপদেষ্টার কাছ থেকে পরামর্শ নিতে পারবেন। আপনার আর্থিক জীবনকে গুছিয়ে তুলুন সেভারলির সাথে।
             </p>
-            <div className="space-x-4">
-              <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+            <div className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+              <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
                 <Link href="/signup">
-                  এখনি শুরু করুন
+                  এখনি শুরু করুন <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
-              <Button size="lg" variant="outline" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+              <Button size="lg" variant="outline" asChild className="shadow-lg hover:shadow-xl transition-shadow w-full sm:w-auto">
                 <Link href="/dashboard">
-                  ডেমো দেখুন
+                  অতিথি হিসেবে দেখুন
                 </Link>
               </Button>
-            </div>
-            <div className="mt-12 sm:mt-16 max-w-4xl mx-auto">
-               <Image
-                src="https://placehold.co/1200x675.png"
-                alt="সেভারলি অ্যাপ ড্যাশবোর্ডের একটি মকআপ ভিউ"
-                width={1200}
-                height={675}
-                className="rounded-lg shadow-2xl object-cover"
-                data-ai-hint="finance dashboard app"
-                priority
-              />
             </div>
           </div>
         </section>
@@ -99,32 +94,23 @@ export default function LandingPage() {
         {/* Features Section */}
         <section id="features" className="py-16 sm:py-24 bg-background">
           <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
+            <div className="text-center mb-16">
               <h2 className="text-3xl sm:text-4xl font-bold font-headline">কেন সেভারলি?</h2>
-              <p className="text-lg text-muted-foreground mt-2 max-w-2xl mx-auto">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ। সেভারলি আপনাকে আপনার অর্থের উপর পূর্ণ নিয়ন্ত্রণ দেয়।</p>
-            </div>
-            <div className="mb-12 sm:mb-16 max-w-xs mx-auto"> 
-              <Image
-                src="https://placehold.co/350x700.png" 
-                alt="সেভারলি মোবাইল অ্যাপের লেনদেন যোগ করার স্ক্রিন"
-                width={350}
-                height={700}
-                className="rounded-lg shadow-xl object-contain" 
-                data-ai-hint="mobile finance app"
-              />
+              <p className="text-lg text-muted-foreground mt-3 max-w-2xl mx-auto">আপনার আর্থিক জীবনকে সহজ করার জন্য সেরা ফিচারসমূহ। সেভারলি আপনাকে আপনার অর্থের উপর পূর্ণ নিয়ন্ত্রণ দেয়।</p>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {features.map((feature) => (
-                <div
-                  key={feature.title}
-                  className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-all duration-300 flex flex-col items-center border border-transparent hover:border-primary"
-                >
-                  <div className="flex-shrink-0">
-                    {feature.icon}
-                  </div>
-                  <h3 className="text-xl font-semibold font-headline mt-4 mb-2">{feature.title}</h3>
-                  <p className="text-muted-foreground text-sm flex-grow">{feature.description}</p>
-                </div>
+                <Card key={feature.title} className="bg-card p-6 rounded-xl shadow-lg hover:shadow-2xl transition-all duration-300 flex flex-col items-center text-center border border-transparent hover:border-primary/50 transform hover:-translate-y-1">
+                  <CardHeader className="p-0 mb-4">
+                    <div className="bg-primary/10 p-4 rounded-full inline-block">
+                      {React.cloneElement(feature.icon, { className: "h-10 w-10 text-primary"})}
+                    </div>
+                  </CardHeader>
+                  <CardContent className="p-0 flex flex-col flex-grow">
+                    <CardTitle className="text-xl font-semibold font-headline mb-2">{feature.title}</CardTitle>
+                    <p className="text-muted-foreground text-sm flex-grow">{feature.description}</p>
+                  </CardContent>
+                </Card>
               ))}
             </div>
           </div>
@@ -132,53 +118,37 @@ export default function LandingPage() {
 
         {/* Call to Action Section */}
         <section className="py-16 sm:py-24 bg-gradient-to-tr from-primary/5 via-background to-secondary/20 dark:from-primary/10 dark:via-background dark:to-secondary/5">
-          <div className="container mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="flex flex-col lg:flex-row items-center justify-between gap-12">
-              <div className="lg:w-1/2 text-center lg:text-left">
-                <h2 className="text-3xl sm:text-4xl font-bold font-headline mb-6">
-                  আপনার আর্থিক নিয়ন্ত্রণ নিতে প্রস্তুত?
-                </h2>
-                <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto lg:mx-0 mb-10">
-                  আজই সেভারলিতে যোগ দিন এবং একটি চাপমুক্ত আর্থিক ভবিষ্যতের দিকে প্রথম পদক্ষেপ নিন। আমাদের সহজ এবং শক্তিশালী টুলস আপনার অর্থ ব্যবস্থাপনাকে করবে আরও কার্যকর।
-                </p>
-                <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
-                  <Link href="/signup">
-                    বিনামূল্যে সাইন আপ করুন
-                  </Link>
-                </Button>
-              </div>
-              <div className="lg:w-1/2">
-                <Image
-                  src="https://placehold.co/700x400.png"
-                  alt="সেভারলি অ্যাপে ব্যয়ের চার্ট এবং গ্রাফ"
-                  width={700}
-                  height={400}
-                  className="rounded-lg shadow-2xl object-cover mx-auto"
-                  data-ai-hint="financial charts graphs"
-                />
-              </div>
-            </div>
+          <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h2 className="text-3xl sm:text-4xl font-bold font-headline mb-6">
+              আপনার আর্থিক নিয়ন্ত্রণ নিতে প্রস্তুত?
+            </h2>
+            <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10">
+              আজই সেভারলিতে যোগ দিন এবং একটি চাপমুক্ত আর্থিক ভবিষ্যতের দিকে প্রথম পদক্ষেপ নিন। আমাদের সহজ এবং শক্তিশালী টুলস আপনার অর্থ ব্যবস্থাপনাকে করবে আরও কার্যকর।
+            </p>
+            <Button size="lg" asChild className="shadow-lg hover:shadow-xl transition-shadow">
+              <Link href="/signup">
+                বিনামূল্যে সাইন আপ করুন <ArrowRight className="ml-2 h-5 w-5" />
+              </Link>
+            </Button>
           </div>
         </section>
       </main>
 
       {/* Footer */}
-      <footer className="py-8 bg-muted/50 border-t border-border">
+      <footer className="py-10 bg-muted/50 border-t border-border">
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} সেভারলি। সর্বস্বত্ব সংরক্ষিত।</p>
-           <p className="text-xs mt-1">একটি ডেমো অ্যাপ্লিকেশন</p>
+          <div className="mb-6">
+            <SaverlyLogo className="h-10 w-10 text-primary mx-auto mb-2" />
+            <p className="text-xl font-bold font-headline text-foreground">সেভারলি</p>
+          </div>
+          <p className="text-sm">&copy; {new Date().getFullYear()} সেভারলি। সর্বস্বত্ব সংরক্ষিত।</p>
+          <p className="text-xs mt-1">একটি ডেমো অ্যাপ্লিকেশন</p>
            
            {/* Developer Info Section */}
-            <div className="mt-8 pt-6 border-t border-border/50 max-w-2xl mx-auto">
-                <h3 className="text-lg font-semibold mb-4 text-foreground">ডেভেলপার পরিচিতি</h3>
+            <div className="mt-10 pt-8 border-t border-border/50 max-w-2xl mx-auto">
+                <h3 className="text-xl font-semibold mb-4 text-foreground">ডেভেলপার পরিচিতি</h3>
                 <div className="flex flex-col items-center gap-4">
-                    <Image
-                        src="https://m.media-amazon.com/images/S/amzn-author-media-prod/b02mvc2hucu96hchlksdjmogii._SY450_CR0%2C0%2C450%2C450_.jpg"
-                        alt="মোহাম্মদ শেখ শাহিনুর রহমান"
-                        width={100}
-                        height={100}
-                        className="rounded-full shadow-md"
-                    />
+                    {/* Developer image removed as per request for landing page, but can be in dedicated page */}
                     <div>
                         <p className="text-xl font-bold text-foreground">মোহাম্মদ শেখ শাহিনুর রহমান</p>
                         <p className="text-sm text-muted-foreground">কবি | লেখক | সফটওয়্যার ইঞ্জিনিয়ার | প্রোগ্রামার | ডিজিটাল ফরেনসিক বিশেষজ্ঞ | প্রযুক্তি উদ্ভাবক</p>
