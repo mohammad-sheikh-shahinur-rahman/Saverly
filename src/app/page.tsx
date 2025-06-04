@@ -105,7 +105,10 @@ export default function LandingPage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
               {features.map((feature) => (
-                <div key={feature.title} className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-shadow duration-300 flex flex-col items-center">
+                <div 
+                  key={feature.title} 
+                  className="bg-card p-6 rounded-lg shadow-lg text-center hover:shadow-xl transition-all duration-300 flex flex-col items-center border border-transparent hover:border-primary"
+                >
                   <div className="flex-shrink-0">
                     {feature.icon}
                   </div>
