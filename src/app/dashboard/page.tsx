@@ -14,7 +14,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { getFinancialChatResponse, type ChatInput, type ChatResponse } from '@/ai/flows/financial-advisor-flow';
 import { getSavingsTip, type SavingsTipInput, type SavingsTipResponse } from '@/ai/flows/savings-tip-flow';
-// type FinancialAdviceInput is not directly used but its schema parts are in ChatInput.
 
 interface ChatMessage {
   role: 'user' | 'ai';
@@ -42,8 +41,9 @@ export default function DashboardPage() {
 
   const [savingsTip, setSavingsTip] = useState<string | null>(null);
   const [isLoadingTip, setIsLoadingTip] = useState(false);
-  const [tipError, setTipError] = useState<string | null>(null); // This can still be used for general errors if needed, or removed if fallback covers all.
+  const [tipError, setTipError] = useState<string | null>(null);
   const [isFallbackTip, setIsFallbackTip] = useState(false);
+  const [fallbackReason, setFallbackReason] = useState<string | null>(null);
 
 
   const recentTransactionsForAI: TransactionForTip[] = [
@@ -64,6 +64,7 @@ export default function DashboardPage() {
     setIsLoadingTip(true);
     setTipError(null);
     setIsFallbackTip(false);
+    setFallbackReason(null);
     try {
       const input: SavingsTipInput = {
         transactions: recentTransactionsForAI,
@@ -71,14 +72,21 @@ export default function DashboardPage() {
       };
       const result: SavingsTipResponse = await getSavingsTip(input);
       setSavingsTip(result.tip);
-    } catch (error) {
+    } catch (error: any) {
       console.error("AI সেভিংস টিপ পেতে ত্রুটি:", error);
-      const fallbackTip = "সাধারণ সঞ্চয়ের একটি ভালো উপায় হলো প্রতি মাসের শুরুতে একটি নির্দিষ্ট পরিমাণ টাকা সরিয়ে রাখা।";
-      setSavingsTip(fallbackTip);
+      const genericFallbackTip = "সাধারণ সঞ্চয়ের একটি ভালো উপায় হলো প্রতি মাসের শুরুতে একটি নির্দিষ্ট পরিমাণ টাকা সরিয়ে রাখা।";
+      let reasonMessage = "(এটি একটি সাধারণ সঞ্চয় টিপ)";
+
+      if (error && typeof error.message === 'string') {
+        if (error.message.includes('429') || error.message.includes('Too Many Requests')) {
+          reasonMessage = "(AI উপদেষ্টা এই মুহূর্তে খুব ব্যস্ত। কিছুক্ষণ পর আবার চেষ্টা করুন।)";
+        } else if (error.message.includes('503') || error.message.includes('Service Unavailable')) {
+          reasonMessage = "(AI উপদেষ্টার সাথে সংযোগে সমস্যা হচ্ছে। কিছুক্ষণ পর আবার চেষ্টা করুন।)";
+        }
+      }
+      setSavingsTip(genericFallbackTip);
+      setFallbackReason(reasonMessage);
       setIsFallbackTip(true);
-      // Set a general error message or a specific one if desired.
-      // For a 503, a fallback might be better than a prominent error message.
-      // setTipError("দুঃখিত, এই মুহূর্তে AI টিপ পাওয়া যাচ্ছে না। এখানে একটি সাধারণ টিপ দেওয়া হলো।");
     } finally {
       setIsLoadingTip(false);
     }
@@ -173,12 +181,12 @@ export default function DashboardPage() {
           </CardHeader>
           <CardContent>
             {isLoadingTip && <p className="text-muted-foreground">টিপ লোড হচ্ছে...</p>}
-            {tipError && !isFallbackTip && <p className="text-destructive">{tipError}</p>} {/* Show error only if not a fallback */}
+            {tipError && !isFallbackTip && <p className="text-destructive">{tipError}</p>}
             {savingsTip && !isLoadingTip && (
               <>
                 <p className="text-foreground">{savingsTip}</p>
-                {isFallbackTip && (
-                  <p className="text-xs text-muted-foreground mt-1">(এটি একটি সাধারণ সঞ্চয় টিপ)</p>
+                {isFallbackTip && fallbackReason && (
+                  <p className="text-xs text-muted-foreground mt-1">{fallbackReason}</p>
                 )}
               </>
             )}
