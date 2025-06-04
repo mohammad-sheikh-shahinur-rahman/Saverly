@@ -1,5 +1,6 @@
 
-// This file is no longer needed as its content has been moved to /src/app/transactions/new/page.tsx
+// This file is no longer needed as its content has been moved to /src/app/transactions/new/TransactionFormClient.tsx
+// and the page structure has been updated.
 // You can delete this file from your project.
 // To prevent build issues if it's still referenced somewhere unexpectedly,
 // I am providing an empty valid component, but it should be removed.
