@@ -2,7 +2,7 @@
 "use client";
 
 import Link from 'next/link';
-import { User, LogOut, Settings, LayoutDashboard, Home } from 'lucide-react'; // Home আমদানি করা হয়েছে
+import { User, LogOut, Settings, LayoutDashboard, Home, Info } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import {
   DropdownMenu,
@@ -58,6 +58,12 @@ export function AppHeader() {
                 <Link href="/settings">
                   <Settings className="mr-2 h-4 w-4" />
                   <span>সেটিংস</span>
+                </Link>
+              </DropdownMenuItem>
+              <DropdownMenuItem asChild>
+                <Link href="/developer-info">
+                  <Info className="mr-2 h-4 w-4" />
+                  <span>ডেভেলপার তথ্য</span>
                 </Link>
               </DropdownMenuItem>
               <DropdownMenuSeparator />

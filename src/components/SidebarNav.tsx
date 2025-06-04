@@ -3,7 +3,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Repeat, FileText, BellRing, NotebookText, Settings2, FileSpreadsheet } from 'lucide-react';
+import { LayoutDashboard, Repeat, FileText, BellRing, NotebookText, Settings2, FileSpreadsheet, Info } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { SidebarMenu, SidebarMenuItem, SidebarMenuButton } from '@/components/ui/sidebar';
 
@@ -15,6 +15,7 @@ const navItems = [
   { href: '/reminders', label: 'রিমাইন্ডার', icon: BellRing },
   { href: '/notes', label: 'আর্থিক নোট', icon: NotebookText },
   { href: '/settings', label: 'সেটিংস', icon: Settings2 },
+  { href: '/developer-info', label: 'ডেভেলপার তথ্য', icon: Info },
 ];
 
 export function SidebarNav() {
@@ -44,4 +45,3 @@ export function SidebarNav() {
     </SidebarMenu>
   );
 }
-

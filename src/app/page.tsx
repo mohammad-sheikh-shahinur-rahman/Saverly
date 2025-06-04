@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { SaverlyLogo } from '@/components/icons';
-import { ListChecks, BarChartBig, Sparkles, LogIn, UserPlus, BellRing, NotebookText } from 'lucide-react';
+import { ListChecks, BarChartBig, Sparkles, LogIn, UserPlus, BellRing, NotebookText, Info } from 'lucide-react';
 import Image from 'next/image';
 
 const features = [
@@ -169,8 +169,8 @@ export default function LandingPage() {
            <p className="text-xs mt-1">একটি ডেমো অ্যাপ্লিকেশন</p>
            
            {/* Developer Info Section */}
-            <div className="mt-8 pt-6 border-t border-border/50">
-                <h3 className="text-lg font-semibold mb-4 text-foreground">ডেভেলপার তথ্য</h3>
+            <div className="mt-8 pt-6 border-t border-border/50 max-w-2xl mx-auto">
+                <h3 className="text-lg font-semibold mb-4 text-foreground">ডেভেলপার পরিচিতি</h3>
                 <div className="flex flex-col items-center gap-4">
                     <Image
                         src="https://m.media-amazon.com/images/S/amzn-author-media-prod/b02mvc2hucu96hchlksdjmogii._SY450_CR0%2C0%2C450%2C450_.jpg"
@@ -179,23 +179,16 @@ export default function LandingPage() {
                         height={100}
                         className="rounded-full shadow-md"
                     />
-                    <p className="text-xl font-bold text-foreground">মোহাম্মদ শেখ শাহিনুর রহমান</p>
-                    <p className="text-sm text-muted-foreground">কবি | লেখক | সফটওয়্যার ইঞ্জিনিয়ার | প্রোগ্রামার | ডিজিটাল ফরেনসিক বিশেষজ্ঞ | প্রযুক্তি উদ্ভাবক</p>
-                    <div className="mt-2">
-                        <p className="font-semibold mb-1 text-foreground">আরও জানুন:</p>
-                        <ul className="space-y-1">
-                            <li>
-                                <Link href="https://mohammad-sheikh-shahinur-rahman.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                    ব্যক্তিগত ওয়েবসাইট
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="https://shahinur.amadersomaj.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
-                                    আমাদের সমাজ ব্লগ
-                                </Link>
-                            </li>
-                        </ul>
+                    <div>
+                        <p className="text-xl font-bold text-foreground">মোহাম্মদ শেখ শাহিনুর রহমান</p>
+                        <p className="text-sm text-muted-foreground">কবি | লেখক | সফটওয়্যার ইঞ্জিনিয়ার | প্রোগ্রামার | ডিজিটাল ফরেনসিক বিশেষজ্ঞ | প্রযুক্তি উদ্ভাবক</p>
                     </div>
+                    <Button asChild variant="outline" className="mt-2">
+                        <Link href="/developer-info">
+                            <Info className="mr-2 h-4 w-4" />
+                            আরও বিস্তারিত জানুন
+                        </Link>
+                    </Button>
                 </div>
             </div>
         </div>
