@@ -62,6 +62,7 @@ export default function DashboardPage() {
 
   const fetchSavingsTip = useCallback(async () => {
     setIsLoadingTip(true);
+    setSavingsTip(null); // Clear previous tip
     setTipError(null);
     setIsFallbackTip(false);
     setFallbackReason(null);
@@ -92,9 +93,7 @@ export default function DashboardPage() {
     }
   }, [recentTransactionsForAI]);
 
-  useEffect(() => {
-    fetchSavingsTip();
-  }, [fetchSavingsTip]);
+  // Removed useEffect that called fetchSavingsTip on mount
 
   const handleSendMessage = async () => {
     if (!currentUserMessage.trim()) return;
@@ -191,7 +190,7 @@ export default function DashboardPage() {
               </>
             )}
             {!isLoadingTip && !savingsTip && !tipError && (
-              <p className="text-muted-foreground">এখন কোনো টিপ নেই।</p>
+              <p className="text-muted-foreground">একটি নতুন টিপ পেতে "নতুন টিপ পান" বাটনে ক্লিক করুন।</p>
             )}
           </CardContent>
           <CardFooter>
