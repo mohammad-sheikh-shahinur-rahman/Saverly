@@ -1,8 +1,9 @@
+
 "use client"
 
-import { Pie, PieChart, ResponsiveContainer, Legend, Tooltip as RechartsTooltip } from "recharts"
+import { Pie, PieChart, Legend, Tooltip as RechartsTooltip } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 
 const chartData = [
   { category: "Food", amount: 275, fill: "var(--color-food)" },
@@ -46,8 +47,8 @@ export function CategoryPieChart() {
         <CardDescription>Breakdown of expenses by category this month</CardDescription>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
-        <ResponsiveContainer width="100%" height={250}>
-            <PieChart>
+        <ChartContainer config={chartConfig} className="mx-auto aspect-square h-[250px] w-full">
+            <PieChart accessibilityLayer>
               <RechartsTooltip
                 cursor={false}
                 content={<ChartTooltipContent hideLabel />}
@@ -61,7 +62,7 @@ export function CategoryPieChart() {
               />
               <Legend />
             </PieChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   )

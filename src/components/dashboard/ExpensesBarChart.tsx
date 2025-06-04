@@ -1,8 +1,9 @@
+
 "use client"
 
-import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip, Legend, ResponsiveContainer } from "recharts"
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip as RechartsTooltip, Legend } from "recharts"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
+import { ChartContainer, ChartTooltipContent, type ChartConfig } from "@/components/ui/chart"
 
 const chartData = [
   { month: "Jan", expenses: 186, income: 80 },
@@ -32,8 +33,8 @@ export function ExpensesBarChart() {
         <CardDescription>Income vs Expenses - Last 6 Months</CardDescription>
       </CardHeader>
       <CardContent>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
+        <ChartContainer config={chartConfig} className="h-[300px] w-full">
+          <BarChart data={chartData} accessibilityLayer>
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey="month"
@@ -48,7 +49,7 @@ export function ExpensesBarChart() {
             <Bar dataKey="income" fill="var(--color-income)" radius={4} />
             <Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
           </BarChart>
-        </ResponsiveContainer>
+        </ChartContainer>
       </CardContent>
     </Card>
   )
