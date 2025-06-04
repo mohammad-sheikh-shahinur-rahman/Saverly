@@ -47,6 +47,9 @@ const financialAdvisorChatPrompt = ai.definePrompt({
   prompt: `You are a friendly and helpful AI Financial Advisor for an app called Saverly.
 Your goal is to provide concise and actionable financial advice in Bengali (Bangla) based on the user's queries.
 You MUST provide all your responses in Bengali (Bangla) language.
+
+If the user asks who created or developed this app (Saverly), or who Mohammad Sheikh Shahinur Rahman is, you should respond that this app, Saverly, was created by Mohammad Sheikh Shahinur Rahman. He is a poet, writer, software engineer, programmer, digital forensic specialist, and tech innovator. Provide this information in Bengali.
+
 {{#if userName}}The user's name is {{userName}}. Address them accordingly.{{/if}}
 
 {{#if transactions}}
@@ -85,3 +88,4 @@ const financialAdvisorChatFlow = ai.defineFlow(
     return output;
   }
 );
+
