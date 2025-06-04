@@ -89,7 +89,7 @@ export default function LandingPage() {
                 width={1200}
                 height={675}
                 className="rounded-lg shadow-2xl object-cover"
-                data-ai-hint="app dashboard interface"
+                data-ai-hint="finance dashboard app"
                 priority
               />
             </div>
@@ -110,7 +110,7 @@ export default function LandingPage() {
                 width={350}
                 height={700}
                 className="rounded-lg shadow-xl object-contain" 
-                data-ai-hint="mobile app transaction"
+                data-ai-hint="mobile finance app"
               />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 sm:gap-10">
@@ -154,7 +154,7 @@ export default function LandingPage() {
                   width={700}
                   height={400}
                   className="rounded-lg shadow-2xl object-cover mx-auto"
-                  data-ai-hint="financial analytics graphs"
+                  data-ai-hint="financial charts graphs"
                 />
               </div>
             </div>
@@ -167,6 +167,37 @@ export default function LandingPage() {
         <div className="container mx-auto px-4 sm:px-6 lg:px-8 text-center text-muted-foreground">
           <p>&copy; {new Date().getFullYear()} সেভারলি। সর্বস্বত্ব সংরক্ষিত।</p>
            <p className="text-xs mt-1">একটি ডেমো অ্যাপ্লিকেশন</p>
+           
+           {/* Developer Info Section */}
+            <div className="mt-8 pt-6 border-t border-border/50">
+                <h3 className="text-lg font-semibold mb-4 text-foreground">ডেভেলপার তথ্য</h3>
+                <div className="flex flex-col items-center gap-4">
+                    <Image
+                        src="https://m.media-amazon.com/images/S/amzn-author-media-prod/b02mvc2hucu96hchlksdjmogii._SY450_CR0%2C0%2C450%2C450_.jpg"
+                        alt="মোহাম্মদ শেখ শাহিনুর রহমান"
+                        width={100}
+                        height={100}
+                        className="rounded-full shadow-md"
+                    />
+                    <p className="text-xl font-bold text-foreground">মোহাম্মদ শেখ শাহিনুর রহমান</p>
+                    <p className="text-sm text-muted-foreground">কবি | লেখক | সফটওয়্যার ইঞ্জিনিয়ার | প্রোগ্রামার | ডিজিটাল ফরেনসিক বিশেষজ্ঞ | প্রযুক্তি উদ্ভাবক</p>
+                    <div className="mt-2">
+                        <p className="font-semibold mb-1 text-foreground">আরও জানুন:</p>
+                        <ul className="space-y-1">
+                            <li>
+                                <Link href="https://mohammad-sheikh-shahinur-rahman.vercel.app/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                    ব্যক্তিগত ওয়েবসাইট
+                                </Link>
+                            </li>
+                            <li>
+                                <Link href="https://shahinur.amadersomaj.com/" target="_blank" rel="noopener noreferrer" className="text-primary hover:underline">
+                                    আমাদের সমাজ ব্লগ
+                                </Link>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
         </div>
       </footer>
     </div>
